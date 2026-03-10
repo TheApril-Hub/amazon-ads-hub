@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Ads Intelligence Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090d;
+  --sidebar: #0d1017;
+  --surface: #111620;
+  --surface2: #171e2c;
+  --border: #1f2a3d;
+  --border2: #253347;
+  --text: #dde3f0;
+  --text-dim: #5e7092;
+  --text-muted: #2e3d55;
+  --accent: #4f8eff;
+  --accent-glow: rgba(79,142,255,0.15);
+  --green: #33cc88;
+  --orange: #ff8c42;
+  --purple: #a673ff;
+  --yellow: #ffd166;
+  --pink: #ff5fa0;
+  --cyan: #00c8d4;
+  --sidebar-w: 240px;
+  --topbar-h: 56px;
+  --tinuiti: #ff6b35;
+  --pacvue: #00d4aa;
+  --skai: #7c5cfc;
+  --quartile: #f5a623;
+  --teikametrics: #e84393;
+  --perpetua: #06c3d4;
+  --adbrew: #5bde9a;
+  --xnurta: #ff6b35;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow: auto;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 20;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.logo-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.logo-title span { color: var(--accent); }
+
+/* Nav section */
+.nav-section { padding: 14px 12px 6px; }
+
+/* ★ 1. Section label — bolder, brighter */
+.nav-section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7a93b8;
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.nav-item:hover { background: var(--surface); color: var(--text); }
+
+.nav-item.active {
+  background: var(--accent-glow);
+  color: var(--accent);
+  border-color: rgba(79,142,255,0.2);
+}
+
+.nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.nav-item.active .nav-icon { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  color: var(--text-dim);
+}
+
+.nav-item.active .nav-badge { background: rgba(79,142,255,0.2); border-color: rgba(79,142,255,0.3); color: var(--accent); }
+
+/* ─── AGENCY DROPDOWN ────────────────────────────────── */
+/* ★ 2. Replaced chips with multi-select dropdown */
+.agency-filter-section {
+  padding: 12px 12px 8px;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.agency-filter-section .nav-section-label { padding: 0 0 8px 0; margin-bottom: 0; }
+
+.agency-dropdown-wrap { position: relative; }
+
+.agency-dropdown-btn {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.agency-dropdown-btn:hover { border-color: var(--border2); }
+.agency-dropdown-btn.open { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
+
+.agency-dropdown-caret { font-size: 9px; transition: transform 0.15s; flex-shrink: 0; }
+.agency-dropdown-btn.open .agency-dropdown-caret { transform: rotate(180deg); }
+
+.agency-dropdown-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.agency-dropdown-panel {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  padding: 6px;
+  z-index: 50;
+  display: none;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+}
+
+.agency-dropdown-panel.open { display: block; }
+
+.agency-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  transition: all 0.12s;
+  user-select: none;
+}
+
+.agency-dd-item:hover { background: var(--surface); color: var(--text); }
+.agency-dd-item.selected { background: rgba(79,142,255,0.1); color: var(--text); }
+
+.agency-dd-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+.agency-dd-check {
+  margin-left: auto;
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--border2);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+  color: transparent;
+}
+
+.agency-dd-item.selected .agency-dd-check {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.agency-dd-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+.agency-dd-count { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-muted); margin-left: 4px; }
+
+.sidebar-bottom {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ─── MAIN ───────────────────────────────────────────── */
+.main {
+  flex: 1;
+  margin-left: var(--sidebar-w);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* TOPBAR */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--sidebar);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  min-width: 0;
+}
+
+.topbar-breadcrumb span:last-child { color: var(--text); font-weight: 600; }
+.topbar-divider { color: var(--text-muted); }
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.search-box { position: relative; }
+
+.search-box input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 7px 12px 7px 32px;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  width: 220px;
+  outline: none;
+  transition: all 0.15s;
+}
+
+.search-box input:focus { border-color: var(--accent); background: var(--surface2); width: 260px; }
+.search-box input::placeholder { color: var(--text-muted); }
+
+.search-icon {
+  position: absolute; left: 9px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim); font-size: 13px;
+  pointer-events: none;
+}
+
+.search-shortcut {
+  position: absolute; right: 8px; top: 50%;
+  transform: translateY(-50%);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 4px;
+  pointer-events: none;
+}
+
+.search-box input:focus + .search-shortcut { display: none; }
+
+/* ★ View & sort controls */
+.ctrl-btn {
+  padding: 5px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.ctrl-btn:hover { border-color: var(--border2); color: var(--text); }
+.ctrl-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+.sort-wrap { position: relative; }
+
+.sort-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 40;
+  display: none;
+  min-width: 160px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.sort-panel.open { display: block; }
+
+.sort-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.12s;
+}
+
+.sort-opt:hover { background: var(--surface); color: var(--text); }
+.sort-opt.on { color: var(--accent); }
+.sort-opt .sort-check { margin-left: auto; font-size: 10px; }
+
+/* CONTENT */
+.content { flex: 1; padding: 24px 28px; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── STATS ROW ─────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.stat-card:nth-child(1)::before { background: var(--accent); }
+.stat-card:nth-child(2)::before { background: var(--green); }
+.stat-card:nth-child(3)::before { background: var(--orange); }
+.stat-card:nth-child(4)::before { background: var(--purple); }
+.stat-card:nth-child(5)::before { background: var(--yellow); }
+
+.stat-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label { font-size: 10px; font-weight: 600; color: var(--text-dim); letter-spacing: 0.3px; }
+
+
+
+/* ─── SECTION HEADER ────────────────────────────────── */
+.section-hdr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.section-hdr h2 { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+.section-hdr-line { flex: 1; height: 1px; background: var(--border); }
+
+.section-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+
+/* ─── FILTER BAR ────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.filter-group { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.fbtn {
+  padding: 5px 11px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.fbtn:hover { border-color: var(--border2); color: var(--text); }
+.fbtn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.f-sep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
+
+/* ─── CARDS GRID & LIST ──────────────────────────────── */
+/* ★ Grid view */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+/* ★ List view */
+.cards-grid.list-view {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.cards-grid.list-view .card {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+}
+
+.cards-grid.list-view .card-accent-bar {
+  width: 3px;
+  height: 100%;
+  top: 0; left: 0;
+  border-radius: 0;
+}
+
+.cards-grid.list-view .card-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.cards-grid.list-view .card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cards-grid.list-view .card-desc { display: none; }
+.cards-grid.list-view .card-topics { display: none; }
+
+/* CARD */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--border2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.28);
+}
+
+.card.hidden { display: none; }
+
+.card-accent-bar {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  border-radius: 2px 2px 0 0;
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-agency {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.card-agency-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+.card-top-right { display: flex; align-items: center; gap: 6px; }
+
+.card-badges { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.badge.q1 { background: #0d2d1f; color: #33cc88; }
+.badge.q2 { background: #0d1f2d; color: #4f8eff; }
+.badge.q3 { background: #2d1f0d; color: #ff8c42; }
+.badge.q4 { background: #1f0d2d; color: #a673ff; }
+.badge.annual { background: #0d1a2d; color: #ffd166; }
+.badge.special { background: #2d1a0d; color: #ff8c42; }
+.badge.amazon { background: #0d1d16; color: var(--green); border: 1px solid #1a3d2e; }
+.badge.dsp { background: #161228; color: var(--purple); border: 1px solid #2e2550; }
+.badge.amc { background: #0d1428; color: var(--accent); border: 1px solid #1a2c50; }
+.badge.ecommerce { background: #1f0d0d; color: #ff5fa0; border: 1px solid #3d1a1a; }
+.badge.guide { background: #0d1f1f; color: var(--cyan); border: 1px solid #1a3d3d; }
+.badge.casestudy { background: #1f1a0d; color: var(--yellow); border: 1px solid #3d3014; }
+.badge.year { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border); }
+/* ★ NEW badge */
+.badge.new-badge { background: rgba(51,204,136,0.15); color: var(--green); border: 1px solid rgba(51,204,136,0.3); animation: pulse-new 2.5s infinite; }
+@keyframes pulse-new { 0%,100%{opacity:1} 50%{opacity:0.6} }
+/* ★ GATED badge */
+.badge.gated-badge { background: rgba(255,140,66,0.12); color: var(--orange); border: 1px solid rgba(255,140,66,0.3); }
+
+.card-title { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.4; }
+.card-desc { font-size: 11px; color: var(--text-dim); line-height: 1.6; }
+
+.card-topics { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.topic {
+  padding: 2px 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ★ Gated info line */
+.card-gated-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--orange);
+  font-family: 'IBM Plex Mono', monospace;
+  background: rgba(255,140,66,0.06);
+  border: 1px solid rgba(255,140,66,0.18);
+  border-radius: 5px;
+  padding: 5px 9px;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-link:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+/* ★ Download button */
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  background: rgba(255,140,66,0.08);
+  border: 1px solid rgba(255,140,66,0.3);
+  border-radius: 6px;
+  color: var(--orange);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-download:hover { background: rgba(255,140,66,0.16); border-color: var(--orange); }
+
+.btn-icon {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text-muted);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-icon:hover { border-color: var(--green); color: var(--green); }
+.btn-icon:hover.note-btn { border-color: var(--purple); color: var(--purple); }
+.btn-icon.has-note { border-color: var(--purple); background: rgba(166,115,255,0.1); color: var(--purple); }
+
+/* ★ Favorite button */
+.btn-icon.fav:hover { border-color: var(--yellow); color: var(--yellow); }
+.btn-icon.fav.starred { border-color: var(--yellow); background: rgba(255,209,102,0.1); color: var(--yellow); }
+
+
+/* ★ Note tooltip */
+.note-preview-wrap { position: relative; display: inline-flex; }
+
+.note-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  width: 200px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.15s;
+  z-index: 30;
+  white-space: normal;
+  font-family: 'IBM Plex Mono', monospace;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.note-preview-wrap:hover .note-tooltip { opacity: 1; transform: translateY(0); }
+
+/* ─── AGENCY OVERVIEW ───────────────────────────────── */
+.agency-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.agency-ov-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.agency-ov-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+.ov-name { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+.ov-stats { display: flex; gap: 12px; margin-bottom: 7px; }
+.ov-stat { display: flex; flex-direction: column; gap: 1px; }
+.ov-stat-num { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 700; color: var(--text); line-height: 1; }
+.ov-stat-label { font-size: 9px; color: var(--text-muted); font-weight: 600; }
+.ov-desc { font-size: 10px; color: var(--text-dim); line-height: 1.5; }
+
+/* ─── MODAL ─────────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.overlay.open { opacity: 1; pointer-events: auto; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 26px;
+  width: 460px;
+  max-width: 90vw;
+  transform: translateY(16px);
+  transition: transform 0.2s;
+}
+
+.overlay.open .modal { transform: translateY(0); }
+
+.modal-hdr { margin-bottom: 4px; }
+.modal-title { font-size: 14px; font-weight: 700; }
+.modal-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 14px; font-family: 'IBM Plex Mono', monospace; margin-top: 3px; }
+
+.modal textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 11px;
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  line-height: 1.7;
+  margin-bottom: 12px;
+  transition: border-color 0.15s;
+}
+
+.modal textarea:focus { border-color: var(--accent); }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+.btn-save {
+  padding: 7px 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-save:hover { opacity: 0.85; }
+
+.btn-cancel {
+  padding: 7px 16px;
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-cancel:hover { color: var(--text); border-color: var(--border2); }
+
+/* ─── EMPTY STATE ───────────────────────────────────── */
+.empty { text-align: center; padding: 52px 0; color: var(--text-dim); display: none; }
+.empty.show { display: block; }
+.empty-icon { font-size: 34px; margin-bottom: 10px; }
+.empty-txt { font-size: 13px; }
+
+/* ─── DASHBOARD HERO ────────────────────────────────── */
+.dash-hero {
+  background: linear-gradient(135deg, var(--surface) 0%, #0d1628 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -10%;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(79,142,255,0.07) 0%, transparent 70%);
+}
+
+.dash-hero-left h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 5px; }
+.dash-hero-left h1 span { color: var(--accent); }
+.dash-hero-left p { font-size: 12px; color: var(--text-dim); line-height: 1.6; max-width: 400px; }
+
+.dash-hero-badge {
+  background: var(--accent-glow);
+  border: 1px solid rgba(79,142,255,0.3);
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dash-hero-badge-num { font-family: 'IBM Plex Mono', monospace; font-size: 26px; font-weight: 700; color: var(--accent); line-height: 1; }
+.dash-hero-badge-txt { font-size: 10px; color: var(--accent); opacity: 0.7; font-weight: 600; margin-top: 2px; }
+
+/* ─── SCROLLBAR ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+
+/* ─── RESPONSIVE ────────────────────────────────────── */
+@media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(3,1fr); } }
+@media (max-width: 900px) { :root { --sidebar-w: 200px; } .stats-row { grid-template-columns: repeat(2,1fr); } .cards-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .sidebar { display: none; } .main { margin-left: 0; } }
+
+/* ─── CALENDAR ───────────────────────────────────────── */
+.cal-hero {
+  background: linear-gradient(135deg, #0d1628 0%, #11162a 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.cal-hero-left h2 { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+.cal-hero-left p  { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+.cal-hero-right { display: flex; gap: 8px; align-items: center; }
+.cal-region-btn {
+  padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
+}
+.cal-region-btn:hover { border-color: var(--border2); color: var(--text); }
+.cal-region-btn.on { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+.cal-region-btn[data-r="NA"].on  { background: rgba(79,142,255,0.12); border-color: #4f8eff; color: #4f8eff; }
+.cal-region-btn[data-r="JP"].on  { background: rgba(255,95,160,0.12); border-color: #ff5fa0; color: #ff5fa0; }
+.cal-region-btn[data-r="EU"].on  { background: rgba(166,115,255,0.12); border-color: #a673ff; color: #a673ff; }
+
+/* Quick filter pills */
+.cal-quick {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; align-items: center;
+}
+.cal-quick-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700;
+  color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase;
+  margin-right: 4px; white-space: nowrap;
+}
+.cal-qbtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px;
+  border: 1.5px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text-dim);
+  font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.cal-qbtn:hover { border-color: var(--border2); color: var(--text); }
+.cal-qbtn.on { color: #fff; }
+.cal-qbtn .qbtn-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* Type filter */
+.cal-type-bar { display: flex; gap: 4px; margin-bottom: 20px; }
+.cal-tbtn {
+  padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim);
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
+}
+.cal-tbtn:hover { color: var(--text); border-color: var(--border2); }
+.cal-tbtn.on { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+
+/* View toggle */
+.cal-view-toggle { display: flex; gap: 4px; }
+
+/* Month grid */
+.cal-months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 28px;
+}
+@media (max-width: 1200px) { .cal-months-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px)  { .cal-months-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.cal-month-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.cal-month-card:hover { border-color: var(--border2); }
+.cal-month-card.has-highlight { border-color: rgba(79,142,255,0.3); }
+
+.cal-month-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.cal-month-name { font-size: 12px; font-weight: 800; letter-spacing: -0.01em; }
+.cal-month-count {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+  color: var(--text-muted); background: var(--border); padding: 1px 6px; border-radius: 3px;
+}
+.cal-month-count.has-events { color: var(--accent); background: var(--accent-glow); }
+
+.cal-month-body { padding: 8px; min-height: 60px; }
+
+.cal-event-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 8px; margin-bottom: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.12s;
+  border: 1px solid transparent;
+}
+.cal-event-pill:hover { background: var(--surface2); border-color: var(--border); }
+.cal-event-pill.highlighted { background: var(--surface2); border-color: var(--border2); }
+
+.cal-pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.cal-pill-name { font-size: 11px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-pill-date { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
+.cal-pill-flags { font-size: 9px; flex-shrink: 0; }
+
+/* List view */
+.cal-list { display: none; }
+.cal-list.active { display: block; }
+.cal-list-month { margin-bottom: 28px; }
+.cal-list-month-hdr {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.cal-list-month-name { font-size: 13px; font-weight: 800; }
+.cal-list-month-line { flex: 1; height: 1px; background: var(--border); }
+
+.cal-list-item {
+  display: grid;
+  grid-template-columns: 90px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.12s;
+  border-left: 3px solid transparent;
+}
+.cal-list-item:hover { border-color: var(--border2); background: var(--surface2); }
+.cal-list-item.highlighted { border-left-color: var(--accent); }
+.cal-item-date { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); }
+.cal-item-date strong { color: var(--text); font-size: 11px; display: block; }
+.cal-item-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.cal-item-sub  { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+.cal-item-flags { font-size: 13px; letter-spacing: 1px; }
+.cal-item-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* Event detail tooltip/popup */
+.cal-detail {
+  position: fixed;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  width: 260px;
+  z-index: 200;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  display: none;
+  pointer-events: none;
+}
+.cal-detail.visible { display: block; }
+.cal-detail-name { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+.cal-detail-date { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--accent); margin-bottom: 8px; }
+.cal-detail-desc { font-size: 11px; color: var(--text-dim); line-height: 1.6; margin-bottom: 8px; }
+.cal-detail-prep { font-size: 10px; color: var(--orange); font-family: 'IBM Plex Mono', monospace; }
+.cal-detail-tip  { font-size: 10px; color: var(--green); margin-top: 6px; line-height: 1.5; }
+.cal-detail-regions { display: flex; gap: 6px; margin-top: 8px; }
+.cal-detail-region {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px; border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.cal-top-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-label">⬡ Intelligence Platform</div>
+    <div class="logo-title">Amazon Ads<br><span>Intel Hub</span></div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-section">
+    <div class="nav-section-label">Navigation</div>
+    <div class="nav-item active" onclick="switchView('dashboard',this)">
+      <span class="nav-icon">◈</span> Dashboard <span class="nav-badge" id="nb-dash">—</span>
+    </div>
+    <div class="nav-item" onclick="switchView('reports',this)">
+      <span class="nav-icon">📊</span> Reports <span class="nav-badge" id="nb-reports">0</span>
+    </div>
+    <div class="nav-item" onclick="switchView('calendar',this)">
+      <span class="nav-icon">📅</span> Calendar <span class="nav-badge" id="nb-cal">—</span>
+    </div>
+  </div>
+
+  <!-- Guide -->
+  <div class="nav-section">
+    <div class="nav-section-label">Guide</div>
+    <div class="nav-item" onclick="switchView('guide-amazon',this)">
+      <span class="nav-icon">🅰</span> Amazon <span class="nav-badge" id="nb-ga">0</span>
+    </div>
+    <div class="nav-item" onclick="switchView('guide-ecommerce',this)">
+      <span class="nav-icon">🛒</span> E-Commerce <span class="nav-badge" id="nb-ge">0</span>
+    </div>
+  </div>
+
+  <!-- Case Studies -->
+  <div class="nav-section">
+    <div class="nav-section-label">Case Studies</div>
+    <div class="nav-item" onclick="switchView('cases-amazon',this)">
+      <span class="nav-icon">🔬</span> Amazon Ads <span class="nav-badge" id="nb-ca">0</span>
+    </div>
+    <div class="nav-item" onclick="switchView('cases-amc',this)">
+      <span class="nav-icon">🧠</span> AMC <span class="nav-badge" id="nb-cam">0</span>
+    </div>
+    <div class="nav-item" onclick="switchView('cases-ams',this)">
+      <span class="nav-icon">📡</span> AMS / DSP <span class="nav-badge" id="nb-cams">0</span>
+    </div>
+  </div>
+
+  <!-- Filter by Agency — multi-select dropdown -->
+  <div class="agency-filter-section">
+    <div class="nav-section-label">Filter by Agency</div>
+    <div class="agency-dropdown-wrap" id="agencyDropdownWrap">
+      <button class="agency-dropdown-btn" id="agencyDropdownBtn" onclick="toggleAgencyDropdown()">
+        <span class="agency-dropdown-label" id="agencyBtnLabel">All Agencies</span>
+        <span class="agency-dropdown-caret">▾</span>
+      </button>
+      <div class="agency-dropdown-panel" id="agencyDropdownPanel">
+        <div class="agency-dd-item" data-agency="all" onclick="toggleAgency('all',this)">
+          <div class="agency-dd-dot" style="background:var(--text-dim)"></div>
+          <span>All Agencies</span>
+          <span class="agency-dd-count" id="adc-all"></span>
+          <div class="agency-dd-check" id="adck-all">✓</div>
+        </div>
+        <div class="agency-dd-divider"></div>
+        <div class="agency-dd-item" data-agency="Tinuiti" onclick="toggleAgency('Tinuiti',this)">
+          <div class="agency-dd-dot" style="background:var(--tinuiti)"></div>
+          <span>Tinuiti</span>
+          <span class="agency-dd-count" id="adc-Tinuiti"></span>
+          <div class="agency-dd-check" id="adck-Tinuiti">✓</div>
+        </div>
+        <div class="agency-dd-item" data-agency="Pacvue" onclick="toggleAgency('Pacvue',this)">
+          <div class="agency-dd-dot" style="background:var(--pacvue)"></div>
+          <span>Pacvue</span>
+          <span class="agency-dd-count" id="adc-Pacvue"></span>
+          <div class="agency-dd-check" id="adck-Pacvue">✓</div>
+        </div>
+        <div class="agency-dd-item" data-agency="Skai" onclick="toggleAgency('Skai',this)">
+          <div class="agency-dd-dot" style="background:var(--skai)"></div>
+          <span>Skai</span>
+          <span class="agency-dd-count" id="adc-Skai"></span>
+          <div class="agency-dd-check" id="adck-Skai">✓</div>
+        </div>
+        <div class="agency-dd-item" data-agency="Quartile" onclick="toggleAgency('Quartile',this)">
+          <div class="agency-dd-dot" style="background:var(--quartile)"></div>
+          <span>Quartile</span>
+          <span class="agency-dd-count" id="adc-Quartile"></span>
+          <div class="agency-dd-check" id="adck-Quartile">✓</div>
+        </div>
+        <div class="agency-dd-item" data-agency="Teikametrics" onclick="toggleAgency('Teikametrics',this)">
+          <div class="agency-dd-dot" style="background:var(--teikametrics)"></div>
+          <span>Teikametrics</span>
+          <span class="agency-dd-count" id="adc-Teikametrics"></span>
+          <div class="agency-dd-check" id="adck-Teikametrics">✓</div>
+        </div>
+        <div class="agency-dd-item" data-agency="Perpetua" onclick="toggleAgency('Perpetua',this)">
+          <div class="agency-dd-dot" style="background:var(--perpetua)"></div>
+          <span>Perpetua</span>
+          <span class="agency-dd-count" id="adc-Perpetua"></span>
+          <div class="agency-dd-check" id="adck-Perpetua">✓</div>
+        </div>
+        <div class="agency-dd-item" data-agency="Adbrew" onclick="toggleAgency('Adbrew',this)">
+          <div class="agency-dd-dot" style="background:var(--adbrew)"></div>
+          <span>Adbrew</span>
+          <span class="agency-dd-count" id="adc-Adbrew"></span>
+          <div class="agency-dd-check" id="adck-Adbrew">✓</div>
+        </div>
+        <div class="agency-dd-item" data-agency="Xnurta" onclick="toggleAgency('Xnurta',this)">
+          <div class="agency-dd-dot" style="background:var(--xnurta)"></div>
+          <span>Xnurta</span>
+          <span class="agency-dd-count" id="adc-Xnurta"></span>
+          <div class="agency-dd-check" id="adck-Xnurta">✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">Updated: Mar 2026<br>8 Agencies · 80+ Items</div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-breadcrumb" id="breadcrumb">
+      <span>Amazon Ads Intel Hub</span>
+      <span class="topbar-divider">/</span>
+      <span>Dashboard</span>
+    </div>
+    <div class="topbar-right">
+
+      <!-- Sort -->
+      <div class="sort-wrap" id="sortWrap">
+        <button class="ctrl-btn" id="sortBtn" onclick="toggleSort()">⇅ <span id="sortLabel">최신순</span></button>
+        <div class="sort-panel" id="sortPanel">
+          <div class="sort-opt on" data-sort="default" onclick="setSort('default',this)">최신순 <span class="sort-check">✓</span></div>
+          <div class="sort-opt" data-sort="name" onclick="setSort('name',this)">이름순 A→Z</div>
+          <div class="sort-opt" data-sort="agency" onclick="setSort('agency',this)">에이전시순</div>
+          <div class="sort-opt" data-sort="year" onclick="setSort('year',this)">연도순 최신</div>
+        </div>
+      </div>
+
+      <!-- View toggle -->
+      <button class="ctrl-btn active" id="btnGrid" onclick="setView('grid')" title="Grid view">▦</button>
+      <button class="ctrl-btn" id="btnList" onclick="setView('list')" title="List view">▤</button>
+
+      <!-- Search -->
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="globalSearch" placeholder="Search… (/ to focus)" oninput="applyAll()">
+        <span class="search-shortcut">/</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="view active" id="view-dashboard">
+      <div class="dash-hero">
+        <div class="dash-hero-left">
+          <h1>Amazon Ads <span>Intelligence Hub</span></h1>
+          <p>글로벌 Top Agency들의 Benchmark Report, Guide, Case Study를 한 곳에서. 7개 에이전시, 70+ 리소스.</p>
+        </div>
+        <div class="dash-hero-badge">
+          <div class="dash-hero-badge-num" id="db-total">0</div>
+          <div class="dash-hero-badge-txt">Total Resources</div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="db-reports">0</div><div class="stat-label">Benchmark Reports</div></div>
+        <div class="stat-card"><div class="stat-num" id="db-guides">0</div><div class="stat-label">Guides & Playbooks</div></div>
+        <div class="stat-card"><div class="stat-num" id="db-cases">0</div><div class="stat-label">Case Studies</div></div>
+        <div class="stat-card"><div class="stat-num" id="db-fav">0</div><div class="stat-label">Favorites ⭐</div></div>
+      </div>
+
+      <div class="section-hdr" style="margin-top:8px;">
+        <h2>Agency Overview</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count">7 agencies tracked</span>
+      </div>
+      <div class="agency-overview" id="agencyOverview"></div>
+
+      <div class="section-hdr">
+        <h2>Recently Added</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count">Latest resources</span>
+      </div>
+      <div class="cards-grid" id="recentCards"></div>
+    </div>
+
+    <!-- ═══ REPORTS ═══ -->
+    <div class="view" id="view-reports">
+      <div class="filter-bar">
+        <div class="filter-group" id="rf-quarter">
+          <button class="fbtn on" onclick="setFilter('rq','all',this)">ALL</button>
+          <button class="fbtn" onclick="setFilter('rq','Q1',this)">Q1</button>
+          <button class="fbtn" onclick="setFilter('rq','Q2',this)">Q2</button>
+          <button class="fbtn" onclick="setFilter('rq','Q3',this)">Q3</button>
+          <button class="fbtn" onclick="setFilter('rq','Q4',this)">Q4</button>
+          <button class="fbtn" onclick="setFilter('rq','Annual',this)">Annual</button>
+          <button class="fbtn" onclick="setFilter('rq','Special',this)">Special</button>
+        </div>
+        <div class="f-sep"></div>
+        <div class="filter-group" id="rf-year">
+          <button class="fbtn on" onclick="setFilter('ry','all',this)">ALL</button>
+          <button class="fbtn" onclick="setFilter('ry','2026',this)">2026</button>
+          <button class="fbtn" onclick="setFilter('ry','2025',this)">2025</button>
+          <button class="fbtn" onclick="setFilter('ry','2024',this)">2024</button>
+          <button class="fbtn" onclick="setFilter('ry','2023',this)">2023</button>
+        </div>
+      </div>
+      <div class="section-hdr">
+        <h2>Benchmark Reports</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count" id="cnt-reports">0 items</span>
+      </div>
+      <div class="cards-grid" id="grid-reports"></div>
+      <div class="empty" id="empty-reports"><div class="empty-icon">◈</div><div class="empty-txt">No reports match the current filters.</div></div>
+    </div>
+
+    <!-- ═══ GUIDE AMAZON ═══ -->
+    <div class="view" id="view-guide-amazon">
+      <div class="filter-bar">
+        <div class="filter-group" id="gaf-type">
+          <button class="fbtn on" onclick="setFilter('gat','all',this)">ALL</button>
+          <button class="fbtn" onclick="setFilter('gat','Sponsored Ads',this)">Sponsored Ads</button>
+          <button class="fbtn" onclick="setFilter('gat','DSP',this)">DSP</button>
+          <button class="fbtn" onclick="setFilter('gat','AMC',this)">AMC</button>
+          <button class="fbtn" onclick="setFilter('gat','Strategy',this)">Strategy</button>
+          <button class="fbtn" onclick="setFilter('gat','Prime Video',this)">Prime Video</button>
+        </div>
+      </div>
+      <div class="section-hdr">
+        <h2>Amazon Guides & Playbooks</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count" id="cnt-ga">0 items</span>
+      </div>
+      <div class="cards-grid" id="grid-guide-amazon"></div>
+      <div class="empty" id="empty-ga"><div class="empty-icon">◈</div><div class="empty-txt">No guides match the current filters.</div></div>
+    </div>
+
+    <!-- ═══ GUIDE ECOMMERCE ═══ -->
+    <div class="view" id="view-guide-ecommerce">
+      <div class="section-hdr">
+        <h2>E-Commerce Guides</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count" id="cnt-ge">0 items</span>
+      </div>
+      <div class="cards-grid" id="grid-guide-ecommerce"></div>
+      <div class="empty" id="empty-ge"><div class="empty-icon">◈</div><div class="empty-txt">No guides match the current filters.</div></div>
+    </div>
+
+    <!-- ═══ CASES AMAZON ═══ -->
+    <div class="view" id="view-cases-amazon">
+      <div class="section-hdr">
+        <h2>Amazon Ads Case Studies</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count" id="cnt-ca">0 items</span>
+      </div>
+      <div class="cards-grid" id="grid-cases-amazon"></div>
+      <div class="empty" id="empty-ca"><div class="empty-icon">◈</div><div class="empty-txt">No case studies match the current filters.</div></div>
+    </div>
+
+    <!-- ═══ CASES AMC ═══ -->
+    <div class="view" id="view-cases-amc">
+      <div class="section-hdr">
+        <h2>Amazon Marketing Cloud (AMC) Case Studies</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count" id="cnt-cam">0 items</span>
+      </div>
+      <div class="cards-grid" id="grid-cases-amc"></div>
+      <div class="empty" id="empty-cam"><div class="empty-icon">◈</div><div class="empty-txt">No case studies match the current filters.</div></div>
+    </div>
+
+    <!-- ═══ CASES AMS ═══ -->
+    <div class="view" id="view-cases-ams">
+      <div class="section-hdr">
+        <h2>AMS / Amazon DSP Case Studies</h2>
+        <div class="section-hdr-line"></div>
+        <span class="section-count" id="cnt-cams">0 items</span>
+      </div>
+      <div class="cards-grid" id="grid-cases-ams"></div>
+      <div class="empty" id="empty-cams"><div class="empty-icon">◈</div><div class="empty-txt">No case studies match the current filters.</div></div>
+    </div>
+
+    <!-- ═══ CALENDAR ═══ -->
+    <div class="view" id="view-calendar">
+
+      <!-- Hero + Region Filter -->
+      <div class="cal-hero">
+        <div class="cal-hero-left">
+          <h2>📅 E-Commerce Event Calendar 2026</h2>
+          <p>북미(NA) · 일본(JP) · EU 주요 마케팅 이벤트 & Amazon 공식 행사 일정</p>
+        </div>
+        <div class="cal-hero-right">
+          <button class="cal-region-btn on" data-r="ALL" onclick="setCalRegion('ALL',this)">ALL</button>
+          <button class="cal-region-btn" data-r="NA"  onclick="setCalRegion('NA',this)">🇺🇸 NA</button>
+          <button class="cal-region-btn" data-r="JP"  onclick="setCalRegion('JP',this)">🇯🇵 JP</button>
+          <button class="cal-region-btn" data-r="EU"  onclick="setCalRegion('EU',this)">🇪🇺 EU</button>
+        </div>
+      </div>
+
+      <!-- Quick Filters: 필수 이벤트 -->
+      <div class="cal-quick">
+        <span class="cal-quick-label">⚡ Quick</span>
+        <button class="cal-qbtn" data-qid="big-spring-sale" onclick="calQuickToggle('big-spring-sale',this)" style="border-color:#33cc88">
+          <span class="qbtn-dot" style="background:#33cc88"></span>Big Spring Sale
+        </button>
+        <button class="cal-qbtn" data-qid="prime-day" onclick="calQuickToggle('prime-day',this)" style="border-color:#4f8eff">
+          <span class="qbtn-dot" style="background:#4f8eff"></span>Prime Day
+        </button>
+        <button class="cal-qbtn" data-qid="prime-big-deal" onclick="calQuickToggle('prime-big-deal',this)" style="border-color:#a673ff">
+          <span class="qbtn-dot" style="background:#a673ff"></span>Prime Big Deal Days
+        </button>
+        <button class="cal-qbtn" data-qid="black-friday" onclick="calQuickToggle('black-friday',this)" style="border-color:#ff8c42">
+          <span class="qbtn-dot" style="background:#ff8c42"></span>Black Friday
+        </button>
+        <button class="cal-qbtn" data-qid="cyber-monday" onclick="calQuickToggle('cyber-monday',this)" style="border-color:#ffd166">
+          <span class="qbtn-dot" style="background:#ffd166"></span>Cyber Monday
+        </button>
+        <button class="cal-qbtn" data-qid="new-year" onclick="calQuickToggle('new-year',this)" style="border-color:#00c8d4">
+          <span class="qbtn-dot" style="background:#00c8d4"></span>New Year
+        </button>
+      </div>
+
+      <!-- Type filter + View toggle -->
+      <div class="cal-top-bar">
+        <div class="cal-type-bar" id="calTypeBar">
+          <button class="cal-tbtn on" data-type="all"    onclick="setCalType('all',this)">ALL</button>
+          <button class="cal-tbtn"    data-type="amazon" onclick="setCalType('amazon',this)">🔵 AMAZON</button>
+          <button class="cal-tbtn"    data-type="holiday" onclick="setCalType('holiday',this)">🟢 HOLIDAY</button>
+          <button class="cal-tbtn"    data-type="sales"   onclick="setCalType('sales',this)">🟠 SALES</button>
+          <button class="cal-tbtn"    data-type="cultural" onclick="setCalType('cultural',this)">🟣 CULTURAL</button>
+        </div>
+        <div class="cal-view-toggle">
+          <button class="ctrl-btn active" id="calBtnGrid" onclick="setCalView('grid')" title="Month grid">▦</button>
+          <button class="ctrl-btn" id="calBtnList" onclick="setCalView('list')" title="List view">▤</button>
+        </div>
+      </div>
+
+      <!-- Grid view -->
+      <div id="calGridView">
+        <div class="cal-months-grid" id="calMonthsGrid"></div>
+      </div>
+
+      <!-- List view -->
+      <div id="calListView" class="cal-list">
+        <div id="calListContent"></div>
+      </div>
+
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- Event detail tooltip -->
+<div class="cal-detail" id="calDetail"></div>
+
+<!-- NOTE MODAL -->
+<div class="overlay" id="overlay" onclick="closeOverlay(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title" id="m-title"></div>
+      <div class="modal-sub" id="m-sub"></div>
+    </div>
+    <textarea id="m-note" placeholder="Add notes, key insights, action items…"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const AGENCY_META = {
+  Tinuiti:      { color:'#ff6b35', desc:'미국 최대 독립 퍼포먼스 에이전시. $4B+ 광고비 관리. Google·Meta·Amazon 전채널.' },
+  Pacvue:       { color:'#00d4aa', desc:'엔터프라이즈 리테일 미디어 플랫폼. 15+ 마켓플레이스. 분기+이벤트 리포트.' },
+  Skai:         { color:'#7c5cfc', desc:'구 Kenshoo. $8B+ 광고비 분석. Retail Media·Paid Search·Social 통합.' },
+  Quartile:     { color:'#f5a623', desc:'6개 AI 엔진. $2B+ 연간 광고비 처리. Amazon Ads 특화 플랫폼.' },
+  Teikametrics: { color:'#e84393', desc:'Flywheel 2.0. 5,000+ 브랜드. Amazon + Walmart 전문 AI 플랫폼.' },
+  Perpetua:     { color:'#06c3d4', desc:'구 Sellics. 3,000+ 브랜드. 글로벌 7개 마켓. AMC·DSP 전문.' },
+  Adbrew:       { color:'#5bde9a', desc:'2024 Amazon Ads Partner Award 수상(Global Expansion). APAC 특화. AMC·AI 기반.' },
+  Xnurta:       { color:'#ff6b35', desc:'구 Xmars. Amazon Technology Innovation Award 2년 연속 수상. AMC Hub·AI Copilot 특화.' },
+};
+
+// gated:true = 이메일/폼 제출 후 PDF 다운로드 가능한 자료
+// gatedLabel = 다운로드 버튼 텍스트
+const DATA_REPORTS = [
+  {id:'t1',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q4 2025',year:'2025',period:'Q4',periodType:'q4',topics:['Amazon SP','Google','Meta','YouTube','TikTok','CTV'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report/',desc:'Amazon SP Cyber Monday +31% YoY. YouTube TV 비중 67%. Prime Video 광고 급성장. 50개 차트.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'t2',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q3 2025',year:'2025',period:'Q3',periodType:'q3',topics:['Amazon SP','Google','Meta','YouTube','Prime Day'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report-q3-2025/',desc:'Q3 2025 Prime Day 포함 분기 트렌드. AI 도입 현황.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'t3',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q2 2025',year:'2025',period:'Q2',periodType:'q2',topics:['Amazon SP','Google','Meta','Demand Gen'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report-q2-2025/',desc:'Q2 2025 디지털 광고 벤치마크. Demand Gen 성장.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'t4',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q1 2025',year:'2025',period:'Q1',periodType:'q1',topics:['Amazon SP','Google','Meta','TikTok'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report-q1-2025/',desc:'Q1 2025 포스트 홀리데이 디지털 광고 트렌드.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'t5',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q4 2024',year:'2024',period:'Q4',periodType:'q4',topics:['Amazon SP','Google','Meta','YouTube'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report-q4-2024/',desc:'Amazon SP CPC -2% YoY. Meta Reels 비중 최고. Temu Google 광고 철수.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'t6',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q3 2024',year:'2024',period:'Q3',periodType:'q3',topics:['Amazon SP','Google','Meta','YouTube'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report-q3-2024/',desc:'Q3 2024 전 채널 디지털 광고 벤치마크.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'t7',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q2 2024',year:'2024',period:'Q2',periodType:'q2',topics:['Amazon SP','Sponsored TV','Google','Meta'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report-q2-2024/',desc:'Q2 2024 Amazon SP +17% YoY. Sponsored TV 론칭 하이라이트.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'t8',agency:'Tinuiti',section:'reports',name:'Digital Ads Benchmark Report Q1 2024',year:'2024',period:'Q1',periodType:'q1',topics:['Amazon SP','Google','Meta','TikTok'],url:'https://tinuiti.com/research-insights/research/digital-ads-benchmark-report-q1-2024/',desc:'Amazon SP +17% YoY. Google CPC +14%. TikTok +21% YoY.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p1',agency:'Pacvue',section:'reports',name:'Q4 2025 Retail Media Benchmark Report',year:'2025',period:'Q4',periodType:'q4',topics:['Amazon US','Amazon EU','Walmart','Instacart','Target'],url:'https://pacvue.com/guides-reports/2025-q4-retail-media-benchmark-report/',desc:'Q4 2025 홀리데이 시즌 전체 분기 벤치마크. Cyber 5 + Black Friday 집중 분석.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p2',agency:'Pacvue',section:'reports',name:'Q4 2025 EU & UK Retail Media Benchmark Report',year:'2025',period:'Q4',periodType:'q4',topics:['Amazon EU','Amazon UK','DSP','Sponsored Ads'],url:'https://pacvue.com/guides-reports/q4-2025-eu-and-uk-retail-media-benchmark-report/',desc:'EU/UK 마켓 Q4 2025 성수기 광고 벤치마크. DSP 포함.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p3',agency:'Pacvue',section:'reports',name:'Q3 2025 US Retail Media Benchmark Report',year:'2025',period:'Q3',periodType:'q3',topics:['Amazon US','Walmart','Instacart','Target','Prime Day'],url:'https://pacvue.com/guides-reports/q3-2025-us-retail-media-benchmark-report/',desc:'Q3 2025 Prime Day + 백투스쿨. 리테일 미디어 21% 성장.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p4',agency:'Pacvue',section:'reports',name:'Cyber 5 2025 Retail Media Benchmark Report',year:'2025',period:'Special',periodType:'special',topics:['Amazon','Walmart','BFCM','CPC','ROAS'],url:'https://pacvue.com/guides-reports/2025-q4-retail-media-benchmark-report/',desc:'Cyber 5 2025 Amazon/Walmart 집중 분석. 역대 최고 경쟁 환경.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p5',agency:'Pacvue',section:'reports',name:'Q1 2025 Retail Media Benchmark Report',year:'2025',period:'Q1',periodType:'q1',topics:['Amazon US','Amazon EU','Walmart','Instacart','DSP'],url:'https://pacvue.com/guides-reports/q1-2025-retail-media-benchmark-report/',desc:'Q1 2025. Amazon DSP NTB 36.5%. Walmart +41.6% YoY.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p6',agency:'Pacvue',section:'reports',name:'Q4 2024 Retail Media Benchmark Report',year:'2024',period:'Q4',periodType:'q4',topics:['Amazon US','Amazon EU','Walmart','Instacart','Cyber 5'],url:'https://pacvue.com/guides-reports/q4-2024-retail-media-benchmark-report/',desc:'Q4 2024. SP ROAS +15.4% YoY. EU SB +27.8% QoQ.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p7',agency:'Pacvue',section:'reports',name:'Cyber 5 2024 Benchmark Report',year:'2024',period:'Special',periodType:'special',topics:['Amazon','Walmart','BFCM','DSP','NTB'],url:'https://pacvue.com/guides-reports/2024-cyber-5-benchmark-report/',desc:'Cyber 5 2024. Amazon +25% YoY. EU SP CPC -28%. DSP NTB 68%.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p8',agency:'Pacvue',section:'reports',name:'Q3 2024 Retail Media Benchmark Report',year:'2024',period:'Q3',periodType:'q3',topics:['Amazon US','Amazon EU','Walmart','Instacart'],url:'https://pacvue.com/guides-reports/q3-2024-benchmark-report/',desc:'Q3 2024 Prime Day+B2S. Amazon SB +20.7% YoY, SP +11.3% YoY.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p9',agency:'Pacvue',section:'reports',name:'2024 Prime Day Benchmark Report',year:'2024',period:'Special',periodType:'special',topics:['Amazon','Prime Day','CPC','DSP','EU'],url:'https://pacvue.com/guides-reports/2024-prime-day-benchmark-report/',desc:'Prime Day 2024. 광고비 +26.3% YoY. CPC +7.6%. SP 예산 78%.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p10',agency:'Pacvue',section:'reports',name:'Q2 2024 Retail Media Benchmark Report',year:'2024',period:'Q2',periodType:'q2',topics:['Amazon US','Amazon EU','Walmart','Instacart'],url:'https://pacvue.com/guides-reports/q2-2024-benchmark-report/',desc:'Q2 2024 Pre-Prime Day. SB +22.6% YoY. Sponsored TV 신규 출시.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p11',agency:'Pacvue',section:'reports',name:'Q1 2024 Retail Media Benchmark Report',year:'2024',period:'Q1',periodType:'q1',topics:['Amazon US','Walmart','Instacart','CPC','ROAS'],url:'https://pacvue.com/guides-reports/q1-2024-cpc-report-retail-media-benchmarks/',desc:'Q1 2024. Amazon Spring Sale 첫 행사. 카테고리별 CPC 벤치마크.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'p12',agency:'Pacvue',section:'reports',name:'2026 Q1 EU Retail Media Benchmark Report',year:'2026',period:'Q1',periodType:'q1',topics:['Amazon EU','Amazon UK','DSP','Sponsored Ads','Incrementality'],url:'https://pacvue.com/guides-reports/2026-q1-eu-retail-media-benchmark-report/',desc:'2026년 효율·증분·수익성에 초점을 맞춘 EU/UK 리테일 미디어 Q1 전략 벤치마크. Amazon 및 주요 RMN 성과 분석.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'s1',agency:'Skai',section:'reports',name:'Q4 2025 Digital Marketing Quarterly Trends Report',year:'2025',period:'Q4',periodType:'q4',topics:['Retail Media','Paid Search','Paid Social','DSP','AI'],url:'https://skai.io/reports-and-whitepapers/q4-2025-quarterly-digital-trends-report/',desc:'Retail Media +33% YoY, 6년 만 최대 분기. DSP +72%. $9.2B 광고비 분석. GenAI 전략 활용 35.5%.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'s2',agency:'Skai',section:'reports',name:'Q3 2025 Digital Marketing Quarterly Trends Report',year:'2025',period:'Q3',periodType:'q3',topics:['Retail Media','Paid Search','Paid Social','CPC'],url:'https://skai.io/reports-and-whitepapers/q3-2025-quarterly-digital-trends-report/',desc:'Retail Media +21% YoY. Paid Search CPC +9%. Paid Social CPM -5%.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'s3',agency:'Skai',section:'reports',name:'Q2 2025 Digital Marketing Quarterly Trends Report',year:'2025',period:'Q2',periodType:'q2',topics:['Retail Media','Paid Search','Paid Social','AI'],url:'https://skai.io/reports-and-whitepapers/q2-2025-quarterly-digital-trends-report/',desc:'$8B+ 광고비 분석. 리테일 미디어 18% YoY 성장 지속.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'s4',agency:'Skai',section:'reports',name:'Q1 2025 Digital Marketing Quarterly Trends Report',year:'2025',period:'Q1',periodType:'q1',topics:['Retail Media','ROAS','CPC','Tariffs'],url:'https://skai.io/reports-and-whitepapers/q1-2025-quarterly-digital-trends-report/',desc:'Retail Media +21% YoY. ROAS 6.1x 5분기 연속.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'s5',agency:'Skai',section:'reports',name:'2025 State of Retail Media Report',year:'2025',period:'Annual',periodType:'annual',topics:['Retail Media','Incrementality','CTV','AI','Social Commerce'],url:'https://skai.io/reports-and-whitepapers/2025-state-of-retail-media-report/',desc:'4번째 연간. 92% 마케터 최우선 채널. 100+ 브랜드/에이전시 서베이.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'s6',agency:'Skai',section:'reports',name:'Q4 2024 Digital Marketing Quarterly Trends Report',year:'2024',period:'Q4',periodType:'q4',topics:['Retail Media','Paid Search','Paid Social','Holiday'],url:'https://skai.io/reports-and-whitepapers/q4-2024-quarterly-digital-trends-report/',desc:'Retail Media +23% YoY, +18% QoQ. DSP 상위 퍼널 급성장.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'s7',agency:'Skai',section:'reports',name:'Q3 2024 Digital Marketing Quarterly Trends Report',year:'2024',period:'Q3',periodType:'q3',topics:['Retail Media','DSP','Prime Day','CPC'],url:'https://skai.io/reports-and-whitepapers/q3-2024-quarterly-digital-trends-report/',desc:'Amazon CPC +2% YoY(둔화). DSP +63%. Prime Day > Cyber 5 광고비 첫 돌파.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'q1',agency:'Quartile',section:'reports',name:'2024 Year in Review Report: Amazon Ads',year:'2024',period:'Annual',periodType:'annual',topics:['Amazon Ads','AI','Automation','Category','ROAS'],url:'https://www.quartile.com/resources/2024-year-in-review-report-amazon-ads',desc:'2024 Amazon Ads 연간 총결산. AI·자동화 전환. 카테고리별 성과 벤치마크.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'tk1',agency:'Teikametrics',section:'reports',name:'2024 Amazon Benchmark Report',year:'2024',period:'Annual',periodType:'annual',topics:['Amazon','Walmart','AI','ACOS'],url:'https://www.teikametrics.com/ebooks/2024-amazon-benchmark-report/',desc:'2024 Amazon/Walmart 연간 벤치마크. AI 기반 최적화. 수천 셀러 데이터.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'tk2',agency:'Teikametrics',section:'reports',name:'2025 Amazon & Walmart Benchmark Report',year:'2025',period:'Annual',periodType:'annual',topics:['Amazon','Walmart','AI','Multi-channel'],url:'https://www.teikametrics.com/ebooks/2025-amazon-vs-walmart-benchmark-report/',desc:'2025 데이터 기반 2026 전략 수립 가이드. 멀티마켓플레이스 AI 최적화.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'pe1',agency:'Perpetua',section:'reports',name:'Amazon Advertising Benchmark Report 2022',year:'2022',period:'Annual',periodType:'annual',topics:['Amazon SP','Global','CPC','ACoS','7 Marketplaces'],url:'https://perpetua.io/resources/reports/amazon-advertising-benchmark-report-2022/',desc:'2M+ SP 캠페인. 7개 글로벌 마켓 2년치. 평균 CPC $0.75.',gated:false},
+  {id:'pe2',agency:'Perpetua',section:'reports',name:'Q1 2023 Amazon Ads Benchmark Report',year:'2023',period:'Q1',periodType:'q1',topics:['Amazon SP','SB','CPC','CTR','North America'],url:'https://perpetua.io/resources/reports/amazon-advertising-benchmark-report-q1-2023/',desc:'Q1 2023 Amazon Ads 북미 벤치마크.',gated:false},
+  {id:'xn1',agency:'Xnurta',section:'reports',name:'Amazon ACOS Benchmarks Per Industry (2025)',year:'2025',period:'Annual',periodType:'annual',topics:['Amazon','ACOS','CPC','Benchmarks','Category'],url:'https://www.xnurta.com/blog/amazon-acos-benchmarks-per-industry',desc:'2025년 카테고리별 Amazon ACOS 벤치마크. 평균 CPC $0.80–$1.25. 카테고리별 목표 ACOS 설정 가이드.',gated:false},
+];
+
+const DATA_GUIDE_AMAZON = [
+  {id:'ga1',agency:'Tinuiti',section:'guide-amazon',name:'Amazon Marketing Cloud (AMC) Complete Guide 2024',year:'2024',topics:['AMC','Attribution','Audience','SQL','DSP'],url:'https://tinuiti.com/blog/amazon/amazon-marketing-cloud/',desc:'AMC 완전 정복 가이드. 작동 방식, SQL 쿼리, 오디언스 빌딩, 고급 기능.',type:'AMC',gated:false},
+  {id:'ga2',agency:'Tinuiti',section:'guide-amazon',name:'Amazon Prime Video Advertising: Ad Formats & Best Practices 2025',year:'2025',topics:['Prime Video','CTV','DSP','Streaming TV','AI Ads'],url:'https://tinuiti.com/blog/amazon/amazon-prime-video-ads/',desc:'Prime Video 광고 완전 가이드. 315M+ 시청자. AI Pause Ads, 쇼퍼블 포맷.',type:'Prime Video',gated:false},
+  {id:'ga3',agency:'Tinuiti',section:'guide-amazon',name:'Amazon unBoxed 2025 Recap: AI & Full-Funnel Advertising',year:'2025',topics:['AI','Full-Funnel','Creative Agent','Ads Agent'],url:'https://tinuiti.com/about/events/amazon-unboxed-recap/',desc:'unBoxed 2025 핵심 정리. Creative Agent, Full-Funnel Campaigns, Agentic Advertising.',type:'Strategy',gated:false},
+  {id:'ga4',agency:'Pacvue',section:'guide-amazon',name:'Amazon Marketing Cloud (AMC) for Retail Media Attribution',year:'2024',topics:['AMC','Attribution','DSP','Multi-touch','Path to Purchase'],url:'https://pacvue.com/blog/amazon-marketing-cloud-2024-guide/',desc:'AMC 활용 멀티터치 어트리뷰션 구현. Path to Purchase 분석, Audience 빌딩.',type:'AMC',gated:false},
+  {id:'ga5',agency:'Pacvue',section:'guide-amazon',name:'Amazon DSP: Programmatic Commerce Growth Guide',year:'2024',topics:['Amazon DSP','Full-Funnel','Automation','AMC Audiences'],url:'https://pacvue.com/amazon-demand-side-platform/',desc:'Amazon DSP 전략 가이드. 자동화, AMC 오디언스, Full-Funnel 측정.',type:'DSP',gated:false},
+  {id:'ga6',agency:'Pacvue',section:'guide-amazon',name:'How to Win Prime Day 2025: Strategy Hub',year:'2025',topics:['Prime Day','Strategy','Automation','AMC','Category'],url:'https://pacvue.com/guides-reports/2024-prime-day-benchmark-report/',desc:'Prime Day 2025 전략 허브. AMC 오디언스, 자동화, 사전 세팅 가이드.',type:'Strategy',gated:false},
+  {id:'ga7',agency:'Adbrew',section:'guide-amazon',name:'Amazon Sponsored Product Ads: Ultimate Guide 2025',year:'2025',topics:['Sponsored Products','Campaign Structure','Bid Optimization','Keywords'],url:'https://adbrew.io/blog/amazon-sponsored-product-ads',desc:'Sponsored Products 완전 정복. 캠페인 구조, 키워드 전략, 자동화, SOV 분석.',type:'Sponsored Ads',gated:false},
+  {id:'ga8',agency:'Adbrew',section:'guide-amazon',name:'Amazon Sponsored Brand Ads: Complete Guide 2025',year:'2025',topics:['Sponsored Brands','Video Ads','Store Spotlight'],url:'https://adbrew.io/blog/sponsored-brand-ads',desc:'Sponsored Brands 완전 가이드. 포맷별 전략, Video Ads, Store Spotlight.',type:'Sponsored Ads',gated:false},
+  {id:'ga9',agency:'Adbrew',section:'guide-amazon',name:'Amazon Sponsored Display Ads: Ultimate Guide 2025',year:'2025',topics:['Sponsored Display','Retargeting','Audience','VCPM'],url:'https://adbrew.io/blog/sponsored-display-ads',desc:'Sponsored Display 전략 가이드. Retargeting, 오디언스 타게팅, VCPM.',type:'Sponsored Ads',gated:false},
+  {id:'ga10',agency:'Adbrew',section:'guide-amazon',name:'Amazon Attribution: Everything You Need to Know 2025',year:'2025',topics:['Amazon Attribution','External Traffic','Google','Meta'],url:'https://adbrew.io/blog/amazon-attribution',desc:'Amazon Attribution 완전 가이드. 외부 트래픽 측정, 채널별 설정, 전환 추적.',type:'Strategy',gated:false},
+  {id:'ga11',agency:'Adbrew',section:'guide-amazon',name:'Amazon DSP Reports: How to Analyze & Utilize Them',year:'2024',topics:['Amazon DSP','Reporting','Analytics'],url:'https://adbrew.io/blog/amazon-dsp-reports',desc:'Amazon DSP 9가지 리포트 완전 분석. Campaign, Audience, Geography 리포트.',type:'DSP',gated:false},
+  {id:'ga12',agency:'Adbrew',section:'guide-amazon',name:'Amazon Ads Audience Bid Boosting: UnBoxed 2024 Feature',year:'2024',topics:['Audience Bid Boosting','AMC','DSP Console'],url:'https://adbrew.io/blog/amazon-ads-audience-bid-boosting-heres-how-to-use-it',desc:'Amazon Ads unBoxed 2024 발표 기능. DSP 콘솔 리뉴얼, Audience Bid Boosting 활용.',type:'AMC',gated:false},
+  {id:'ga13',agency:'Perpetua',section:'guide-amazon',name:'Amazon DSP Compendium 2024',year:'2024',topics:['Amazon DSP','STV','OLV','New-to-Brand','ROAS'],url:'https://perpetua.io/blog-amazon-dsp/',desc:'Amazon DSP 종합 안내서. STV NTB 효과, DSP vs Sponsored Ads ROAS 비교.',type:'DSP',gated:false},
+  {id:'ga14',agency:'Perpetua',section:'guide-amazon',name:'AMC Benchmark Report (with WARC)',year:'2023',topics:['AMC','DSP','OTT','Attribution','NTB'],url:'https://go.perpetua.io/amc-benchmark-report',desc:'업계 최초 AMC 벤치마크. OTT 광고 NTB 영향, 시간대별 전환 패턴.',type:'AMC',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'ga15',agency:'Skai',section:'guide-amazon',name:'Full Funnel Retail Media Formula Playbook',year:'2024',topics:['Full-Funnel','Retail Media','DSP','Strategy'],url:'https://skai.io/reports-and-whitepapers/full-funnel-retail-media-formula-playbook/',desc:'리테일 미디어 풀퍼널 전략 플레이북. 채널별 역할, 측정 프레임워크.',type:'Strategy',gated:true,gatedLabel:'리포트 받기'},
+  {id:'ga16',agency:'Tinuiti',section:'guide-amazon',name:'Amazon Accelerate 2025 Key Takeaways',year:'2025',topics:['AI','Multi-Touch Attribution','Adobe Express','Full-Funnel'],url:'https://tinuiti.com/about/events/amazon-accelerate-2025/',desc:'Amazon Accelerate 2025 핵심 정리. Multi-Touch Attribution, AI Creative.',type:'Strategy',gated:false},
+  {id:'ga17',agency:'Xnurta',section:'guide-amazon',name:'Amazon Marketing Cloud: How to Use AMC',year:'2024',topics:['AMC','Audience Segmentation','Attribution','SQL','DSP'],url:'https://www.xnurta.com/blog/amazon-marketing-cloud-explained',desc:'AMC 작동 원리, 오디언스 세그멘테이션, Path-to-Conversion 모델. Xnurta AMC Hub로 SQL 없이 활용.',type:'AMC',gated:false},
+  {id:'ga18',agency:'Xnurta',section:'guide-amazon',name:'Supercharge Amazon Advertising ROI with AMC',year:'2024',topics:['AMC','ROAS','Audience','Personalization','DSP'],url:'https://www.xnurta.com/blog/supercharge-amazon-advertising-roi-with-amc',desc:'AMC 기반 커스텀 오디언스 세분화, 개인화 메시지 전략. 전환율·ROI 극대화 실전 가이드.',type:'AMC',gated:false},
+  {id:'ga19',agency:'Xnurta',section:'guide-amazon',name:'From unBoxed 2025 to 2026 Roadmap: What to Adopt',year:'2025',topics:['unBoxed 2025','AI Ads','Full-Funnel','AMC','DSP'],url:'https://www.xnurta.com/blog-categories/amazon-ads',desc:'Amazon unBoxed 2025 핵심 발표 정리 및 2026 전략 로드맵. AI 광고 에이전트, 측정 혁신.',type:'Strategy',gated:false},
+];
+
+const DATA_GUIDE_ECOMMERCE = [
+  {id:'ge1',agency:'Pacvue',section:'guide-ecommerce',name:'Winning the Beauty Category: Market Intelligence & Insights',year:'2025',topics:['Beauty','Personal Care','Amazon','Walmart'],url:'https://pacvue.com/guides-reports/winning-the-beauty-category-market-intelligence-and-insights-that-drive-growth/',desc:'뷰티·퍼스널케어 카테고리 전략 가이드. Amazon/Walmart 경쟁 환경, SOV.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'ge2',agency:'Pacvue',section:'guide-ecommerce',name:'2025 Cyber 5 Prep Checklist',year:'2025',topics:['Cyber 5','Holiday','Black Friday','Checklist'],url:'https://pacvue.com/guides-reports/2025-cyber-5-prep-checklist/',desc:'Cyber 5 2025 준비 체크리스트. 확장된 프로모션 윈도우, CPC 관리.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'ge3',agency:'Teikametrics',section:'guide-ecommerce',name:'2025 Holiday Playbook: Amazon & Walmart',year:'2025',topics:['Holiday','Black Friday','Cyber Monday','Amazon','Walmart'],url:'https://www.teikametrics.com/ebooks/the-2025-holiday-playbook-for-marketplace-sellers/',desc:'2025 홀리데이 플레이북. BFCM 전략, 예산 배분, 멀티채널 전술.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'ge4',agency:'Skai',section:'guide-ecommerce',name:'2025 State of Retail Media Report',year:'2025',topics:['Retail Media','Omnichannel','CTV','AI'],url:'https://skai.io/reports-and-whitepapers/2025-state-of-retail-media-report/',desc:'리테일 미디어 생태계 현황. 92% 마케터 최우선 채널. Incrementality, CTV.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'ge5',agency:'Adbrew',section:'guide-ecommerce',name:'Multichannel eCommerce: Growing Your Brand Across Channels',year:'2025',topics:['Multichannel','Amazon','Walmart','TikTok Shop','Shopify'],url:'https://adbrew.io/blog/multichannel-ecommerce',desc:'멀티채널 이커머스 성장 전략. Amazon 외 채널 확장, 통합 광고 전략.',gated:false},
+  {id:'ge6',agency:'Pacvue',section:'guide-ecommerce',name:'European Beauty Category Deep Dive',year:'2025',topics:['EU','Beauty','Amazon EU','Category Intelligence'],url:'https://pacvue.com/guides-reports/winning-the-beauty-category-market-intelligence-and-insights-that-drive-growth/',desc:'유럽 뷰티 카테고리 심층 분석. UK·DE·FR·IT·ES 5개국 Amazon EU 트렌드.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'ge7',agency:'Tinuiti',section:'guide-ecommerce',name:'2025 Amazon Prime Day Study: High Tariffs, Higher Intent',year:'2025',topics:['Prime Day','Consumer Behavior','AI Search','Tariffs'],url:'https://tinuiti.com/about/news/tinuiti-wrapped/',desc:'Prime Day 2025 소비자 조사. 89% 구매 의향. 1/3이 ChatGPT로 제품 검색.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'ge8',agency:'Skai',section:'guide-ecommerce',name:"Why Walled Gardens Are a Marketer's Best Bet",year:'2024',topics:['Walled Gardens','First-Party Data','Privacy'],url:'https://skai.io/reports-and-whitepapers/why-walled-gardens-are-a-marketers-best-bet/',desc:'Walled Garden 전략 리포트. 쿠키리스 시대 퍼스트파티 데이터 활용.',gated:true,gatedLabel:'리포트 받기'},
+  {id:'ge9',agency:'Xnurta',section:'guide-ecommerce',name:'AMC & DSP Audiences: What Is the Difference?',year:'2024',topics:['AMC','Amazon DSP','Audience','Frequency Cap'],url:'https://www.xnurta.com/blog/amazon-dsp-and-amc-audiences---what-is-the-difference',desc:'AMC vs DSP 오디언스의 차이점 완전 정리. 장기 주파수 캡, 커스텀 세그먼트 구축 전략.',gated:false},
+];
+
+const DATA_CASES_AMAZON = [
+  {id:'ca1',agency:'Tinuiti',section:'cases-amazon',name:'illycaffè: #1 Best Seller in Ground Coffee (2025 Amazon Partner Award)',year:'2025',topics:['Streaming TV','Prime Video','DSP','NTB'],url:'https://tinuiti.com/about/events/amazon-unboxed-recap/',desc:'STV + Prime Video 어웨어니스 → DSP + Sponsored Ads 리마케팅. Ground Coffee #1 Best Seller 달성. 2025 Amazon Ads Partner Award 수상.',gated:false},
+  {id:'ca2',agency:'Tinuiti',section:'cases-amazon',name:'Full Moon Pet: +24% Revenue via AI-Powered Amazon Optimization',year:'2025',topics:['ROAS','Skai AI','Budget Navigator'],url:'https://skai.io/case-studies/tinuiti-drives-24-revenue-growth-through-ai-powered-amazon-optimization-for-full-moon-pet/',desc:'Skai AI Budget Navigator로 Full Moon Pet Amazon ROAS 극대화. 추가 예산 없이 24% 매출 성장.',gated:false},
+  {id:'ca3',agency:'Tinuiti',section:'cases-amazon',name:"TOMS 'Wear Good': Sponsored Brands Video for Brand Message",year:'2023',topics:['Sponsored Brands Video','Brand Awareness','AMC'],url:'https://tinuiti.com/about/events/amazon-unboxed-2023/',desc:'TOMS "Wear Good" 자선 모델 인지도 구축. Sponsored Brands Video + STV 조합.',gated:false},
+  {id:'ca4',agency:'Pacvue',section:'cases-amazon',name:"Duracell 'Built Different': Super Bowl → Amazon Full-Funnel (2025 Partner Award)",year:'2025',topics:['Super Bowl','Brand Campaign','AMC Audiences','Full-Funnel'],url:'https://advertising.amazon.com/en-us/partner-awards',desc:'Super Bowl 캠페인 Amazon 리테일 연결. APS 스포츠 인벤토리, AMC 오디언스 리마케팅.',gated:false},
+  {id:'ca5',agency:'Skai',section:'cases-amazon',name:'WaterWipes: Prime Day 2024 → Top 100 Searches (2025 Partner Award)',year:'2024',topics:['Prime Day','AMC','DSP','Sponsored Products'],url:'https://advertising.amazon.com/en-us/partner-awards',desc:'AMC 리타게팅 풀 세분화, SP 입찰 최적화, DSP 코디네이션. Prime Day Top 100 검색어 진입.',gated:false},
+  {id:'ca6',agency:'Adbrew',section:'cases-amazon',name:'BoldCare: Sexual Wellness Category Leadership in India (2025 Partner Award)',year:'2025',topics:['APAC','India','Brand Awareness','Challenger'],url:'https://adbrew.io/newsroom/adbrew-wins-challenger-award-at-the-amazon-ads-partner-awards-2025',desc:'인도 성 건강 카테고리에서 BoldCare 브랜드 리더십 구축. 2025 Challenger Award 수상.',gated:false},
+  {id:'ca7',agency:'Adbrew',section:'cases-amazon',name:'K2 Health: +24% Incremental Sales with Minimal Human Intervention',year:'2024',topics:['AI Automation','ROAS','Incremental Sales'],url:'https://adbrew.io/amazon-partner-award-2024-finalist/',desc:'K2 Health 24% 증분 판매 성장. Adbrew AI 기반 엔드투엔드 캠페인 자동화.',gated:false},
+  {id:'ca8',agency:'Xnurta',section:'cases-amazon',name:'Greenworks: +20% Sales Growth with Full-Funnel Amazon Ads (2024 Partner Award)',year:'2024',topics:['Full-Funnel','DSP Video','OLV','NTB','ROAS'],url:'https://www.xnurta.com/case-study/greenworks-unlocks-20-growth-with-full-funnel-amazon-ads-strategy',desc:'OLV 어웨어니스→SP+SB 리마케팅 풀퍼널. 광고 참여 +15% YoY, ROAS +10% YoY, NTB +10% YoY. 2024 Beyond the Funnel Innovation Award 수상.',gated:false},
+  {id:'ca9',agency:'Xnurta',section:'cases-amazon',name:'SunnyDaze Decor: +408% Growth in Ad Sales with DSP + SP',year:'2024',topics:['Amazon DSP','Sponsored Products','ROAS','Lawn & Garden'],url:'https://www.xnurta.com/case-studies',desc:'Lawn & Garden 카테고리. DSP+SP 통합 전략으로 광고 매출 408% 성장.',gated:false},
+];
+
+const DATA_CASES_AMC = [
+  {id:'cam1',agency:'Pacvue',section:'cases-amc',name:'Colgate (GroupM): AMC Audiences for Prime Day Custom Strategy',year:'2024',topics:['AMC Audiences','Prime Day','GroupM'],url:'https://pacvue.com/amazon-demand-side-platform/',desc:'AMC Audiences 신기능 즉시 도입. GroupM 협력 Colgate 맞춤형 Prime Day 타게팅.',gated:false},
+  {id:'cam2',agency:'Pacvue',section:'cases-amc',name:'OneStone: AMC Dashboard로 Media Mix 검증',year:'2024',topics:['AMC Dashboard','Path to Purchase','DSP'],url:'https://pacvue.com/amazon-demand-side-platform/',desc:'AMC Path to Purchase + Ad Overlap Report로 DSP-Search 상호보완 관계 증명.',gated:false},
+  {id:'cam3',agency:'Pacvue',section:'cases-amc',name:'Micron/Crucial: AMC Audiences로 글로벌 Full-Funnel 측정',year:'2024',topics:['AMC','Global','Multi-market','Amazon DSP'],url:'https://pacvue.com/amazon-demand-side-platform/',desc:'Micron 소비자 브랜드 Crucial. 글로벌 멀티마켓 DSP 전략 최적화.',gated:false},
+  {id:'cam4',agency:'Perpetua',section:'cases-amc',name:'Amazon Marketing Cloud Benchmark Report with WARC',year:'2023',topics:['AMC','OTT','Attribution','NTB'],url:'https://go.perpetua.io/amc-benchmark-report',desc:'AMC 기반 업계 최초 벤치마크. OTT 어웨어니스 NTB 전환 영향, Path-to-Purchase.',gated:true,gatedLabel:'PDF 다운로드'},
+  {id:'cam5',agency:'Tinuiti',section:'cases-amc',name:'Poppi: AMC로 NTB 전환 드라이버 발굴',year:'2024',topics:['AMC','NTB','Attribution'],url:'https://tinuiti.com/blog/amazon/amazon-marketing-cloud/',desc:'Poppi 브랜드. AMC 채널별 터치포인트 분석으로 NTB 전환율 최고 드라이버 발굴.',gated:false},
+  {id:'cam6',agency:'Adbrew',section:'cases-amc',name:'AMC Audience Bid Boosting 전략 가이드 (unBoxed 2024)',year:'2024',topics:['AMC','Audience Bid Boosting','DSP Console'],url:'https://adbrew.io/blog/amazon-ads-audience-bid-boosting-heres-how-to-use-it',desc:'unBoxed 2024 AMC 신기능. Audience Bid Boosting으로 고가치 오디언스 타게팅 효율화.',gated:false},
+  {id:'cam7',agency:'Xnurta',section:'cases-amc',name:'Goal Zero: +40% YoY Sales & +71% ROAS via AMC Hub',year:'2024',topics:['AMC Hub','ROAS','NTB','Path to Conversion'],url:'https://advertising.amazon.com/library/case-studies/xnurta-goalzero-amc-hub',desc:'Goal Zero. Xnurta AMC Hub로 Path-to-Conversion 분석, NTB 오디언스 자동화. Q2 ROAS +71% YoY, 매출 +40% YoY. 2024 Technology Innovation Award 수상.',gated:false},
+];
+
+const DATA_CASES_AMS = [
+  {id:'cams1',agency:'Pacvue',section:'cases-ams',name:'Kraft Heinz Philadelphia: Competitor OOS 활용 DSP ROAS +12%',year:'2023',topics:['Amazon DSP','Shelf Intelligent Media','Competitor OOS'],url:'https://www.profitero.com/blog/case-study-shelf-intelligent-media-turns-spend-into-growth-roas',desc:'경쟁사 품절 시 자동 DSP 입찰 증가. NTB +28%, 광고 판매 +25%, ROAS +12%.',gated:false},
+  {id:'cams2',agency:'Skai',section:'cases-ams',name:'Pharmaceutical Brand: AI Dayparting으로 Amazon Ads ROAS +22%',year:'2023',topics:['AI Dayparting','Intraday Bidding','ROAS'],url:'https://skai.io/case-studies/pharmaceutical-brand/',desc:'Skai AI Dayparting + Intraday Reports. 시간대별 자동 입찰 최적화. ROAS 22% 향상.',gated:false},
+  {id:'cams3',agency:'Pacvue',section:'cases-ams',name:'Reckitt: Full-Funnel DSP 전략으로 NPI 전환율 개선',year:'2024',topics:['Amazon DSP','New Product Launch','Full-Funnel'],url:'https://pacvue.com/amazon-demand-side-platform/',desc:'Reckitt 신제품 런치. Amazon DSP 효율화로 Full-Funnel NPI 전략. 최적 미디어 믹스 발굴.',gated:false},
+  {id:'cams4',agency:'Tinuiti',section:'cases-ams',name:'The Honest Company: Best Retail Media Strategy 2025 (Digiday Award)',year:'2025',topics:['DSP','Full-Funnel','Retail Media','Digiday Award'],url:'https://tinuiti.com/about/news/tinuiti-wrapped/',desc:'Digiday Awards 2025 Best Retail Media Strategy 수상. Amazon DSP 풀퍼널 ROI 최적화.',gated:false},
+  {id:'cams5',agency:'Adbrew',section:'cases-ams',name:'Minimalist: Amazon Ads 풀퍼널 전략 (2025 Partner Award Finalist)',year:'2025',topics:['Full-Funnel','Sponsored Ads','DSP','Beauty'],url:'https://adbrew.io/newsroom/adbrew-at-amazon-accelerate-2025',desc:'Minimalist 뷰티. Adbrew 풀퍼널 전략으로 2025 Amazon Ads Partner Award 파이널리스트.',gated:false},
+  {id:'cams6',agency:'Xnurta',section:'cases-ams',name:'Jackery: +17% Audience Reach & +13% Store Traffic via Amazon DSP',year:'2024',topics:['Amazon DSP','AMC','Brand Store','Audience'],url:'https://advertising.amazon.com/library/case-studies/xnurta-jackery',desc:'Jackery 에너지 제품. Xnurta AI가 신규 오디언스 세그먼트 발굴. Amazon DSP+AMC로 리치 +17%, 브랜드 스토어 트래픽 +13% 달성.',gated:false},
+];
+
+const ALL_DATA = [...DATA_REPORTS,...DATA_GUIDE_AMAZON,...DATA_GUIDE_ECOMMERCE,...DATA_CASES_AMAZON,...DATA_CASES_AMC,...DATA_CASES_AMS];
+const CURRENT_YEAR = 2026;
+const NEW_YEARS = ['2025','2026'];
+
+const SECTION_MAP = {
+  'reports':        DATA_REPORTS,
+  'guide-amazon':   DATA_GUIDE_AMAZON,
+  'guide-ecommerce':DATA_GUIDE_ECOMMERCE,
+  'cases-amazon':   DATA_CASES_AMAZON,
+  'cases-amc':      DATA_CASES_AMC,
+  'cases-ams':      DATA_CASES_AMS,
+};
+
+const BADGE_PERIOD = { q1:'Q1',q2:'Q2',q3:'Q3',q4:'Q4',annual:'Annual',special:'Special' };
+
+const BREADCRUMBS = {
+  'dashboard':      ['Dashboard'],
+  'reports':        ['Reports', 'Benchmark Reports'],
+  'guide-amazon':   ['Guide', 'Amazon'],
+  'guide-ecommerce':['Guide', 'E-Commerce'],
+  'cases-amazon':   ['Case Studies', 'Amazon Ads'],
+  'cases-amc':      ['Case Studies', 'AMC'],
+  'cases-ams':      ['Case Studies', 'AMS / DSP'],
+  'calendar':       ['Calendar', '2026 Events'],
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  view: 'dashboard',
+  agencies: [],
+  search: '',
+  filters: { rq:'all', ry:'all', gat:'all' },
+  favorites:  JSON.parse(localStorage.getItem('hub_fav') || '{}'),
+  notes:      JSON.parse(localStorage.getItem('hub_notes') || '{}'),
+  noteId: null,
+  viewMode: 'grid',
+  sortBy: 'default',
+};
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const ac = id => document.getElementById(id);
+
+function agencyColor(a) {
+  const map = { Tinuiti:'var(--tinuiti)', Pacvue:'var(--pacvue)', Skai:'var(--skai)', Quartile:'var(--quartile)', Teikametrics:'var(--teikametrics)', Perpetua:'var(--perpetua)', Adbrew:'var(--adbrew)', Xnurta:'var(--xnurta)' };
+  return map[a] || '#888';
+}
+
+function matchItem(item) {
+  // multi-agency filter
+  if (state.agencies.length > 0 && !state.agencies.includes(item.agency)) return false;
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    const hay = (item.name + ' ' + item.agency + ' ' + (item.topics||[]).join(' ') + ' ' + (item.desc||'')).toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  if (item.section === 'reports') {
+    if (state.filters.rq !== 'all' && item.period !== state.filters.rq) return false;
+    if (state.filters.ry !== 'all' && item.year !== state.filters.ry) return false;
+  }
+  if (item.section === 'guide-amazon') {
+    if (state.filters.gat !== 'all' && !(item.type||'').includes(state.filters.gat) && !(item.topics||[]).some(t => t.includes(state.filters.gat))) return false;
+  }
+  return true;
+}
+
+function sortData(arr) {
+  const a = [...arr];
+  if (state.sortBy === 'name')   return a.sort((x,y) => x.name.localeCompare(y.name));
+  if (state.sortBy === 'agency') return a.sort((x,y) => x.agency.localeCompare(y.agency));
+  if (state.sortBy === 'year')   return a.sort((x,y) => (y.year||'').localeCompare(x.year||''));
+  return a; // default = original order
+}
+
+function buildCard(item) {
+  const c = agencyColor(item.agency);
+  const hasNote = !!(state.notes[item.id]?.trim());
+  const isFav   = !!state.favorites[item.id];
+  const isNew   = NEW_YEARS.includes(item.year);
+  const topics  = (item.topics||[]).map(t => `<span class="topic">${t}</span>`).join('');
+
+  let badges = '';
+  if (isNew) badges += `<span class="badge new-badge">NEW</span>`;
+  if (item.periodType) badges += `<span class="badge ${item.periodType}">${BADGE_PERIOD[item.periodType]||item.periodType}</span>`;
+  if (item.year) badges += `<span class="badge year">${item.year}</span>`;
+  if (item.section === 'guide-amazon')    badges += `<span class="badge guide">GUIDE</span>`;
+  if (item.section === 'guide-ecommerce') badges += `<span class="badge ecommerce">E-COM</span>`;
+  if (item.section?.startsWith('cases'))  badges += `<span class="badge casestudy">CASE</span>`;
+  if (item.gated) badges += `<span class="badge gated-badge">🔒 GATED</span>`;
+
+  const noteSnippet = hasNote ? state.notes[item.id].trim().slice(0,80) + (state.notes[item.id].trim().length > 80 ? '…':'') : '';
+  const noteBtn = `
+    <div class="note-preview-wrap">
+      <button class="btn-icon note-btn ${hasNote?'has-note':''}"
+        onclick="openNote('${item.id}','${item.name.replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\n/g,' ')}','${item.agency}')"
+        title="노트">✎</button>
+      ${hasNote ? `<div class="note-tooltip">${noteSnippet}</div>` : ''}
+    </div>`;
+
+  const gatedRow = item.gated ? `
+    <div class="card-gated-info">
+      🔒 이 자료는 이메일/폼 제출 후 다운로드 가능합니다
+    </div>` : '';
+
+  const dlBtn = item.gated
+    ? `<a class="btn-download" href="${item.url}" target="_blank" rel="noopener">📥 ${item.gatedLabel||'다운로드'}</a>`
+    : '';
+
+  return `
+  <div class="card" id="card-${item.id}">
+    <div class="card-accent-bar" style="background:${c}"></div>
+    <div class="card-top">
+      <div class="card-agency">
+        <div class="card-agency-dot" style="background:${c}"></div>
+        <span style="color:${c}">${item.agency}</span>
+      </div>
+      <div class="card-badges">${badges}</div>
+    </div>
+    <div class="card-title">${item.name}</div>
+    ${item.desc ? `<div class="card-desc">${item.desc}</div>` : ''}
+    ${topics ? `<div class="card-topics">${topics}</div>` : ''}
+    ${gatedRow}
+    <div class="card-footer">
+      <a class="btn-link" href="${item.url}" target="_blank" rel="noopener">↗ 원문 보기</a>
+      ${dlBtn}
+      ${noteBtn}
+      <button class="btn-icon fav ${isFav?'starred':''}" onclick="toggleFav('${item.id}',this)" title="즐겨찾기">★</button>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
+function renderGrid(gridId, data, countId, emptyId) {
+  const filtered = sortData(data.filter(matchItem));
+  const el = ac(gridId);
+  el.innerHTML = filtered.map(buildCard).join('');
+  // apply view mode
+  el.classList.toggle('list-view', state.viewMode === 'list');
+  if (countId) ac(countId).textContent = `${filtered.length} items`;
+  if (emptyId) ac(emptyId).classList.toggle('show', filtered.length === 0);
+  return filtered;
+}
+
+function applyAll() {
+  state.search = ac('globalSearch').value;
+  const v = state.view;
+  if (v === 'reports')              renderGrid('grid-reports', DATA_REPORTS, 'cnt-reports', 'empty-reports');
+  else if (v === 'guide-amazon')    renderGrid('grid-guide-amazon', DATA_GUIDE_AMAZON, 'cnt-ga', 'empty-ga');
+  else if (v === 'guide-ecommerce') renderGrid('grid-guide-ecommerce', DATA_GUIDE_ECOMMERCE, 'cnt-ge', 'empty-ge');
+  else if (v === 'cases-amazon')    renderGrid('grid-cases-amazon', DATA_CASES_AMAZON, 'cnt-ca', 'empty-ca');
+  else if (v === 'cases-amc')       renderGrid('grid-cases-amc', DATA_CASES_AMC, 'cnt-cam', 'empty-cam');
+  else if (v === 'cases-ams')       renderGrid('grid-cases-ams', DATA_CASES_AMS, 'cnt-cams', 'empty-cams');
+
+  updateNav();
+  updateAgencyCounts();
+  updateStats();
+}
+
+function updateNav() {
+  const counts = {
+    reports: DATA_REPORTS.filter(matchItem).length,
+    ga:  DATA_GUIDE_AMAZON.filter(matchItem).length,
+    ge:  DATA_GUIDE_ECOMMERCE.filter(matchItem).length,
+    ca:  DATA_CASES_AMAZON.filter(matchItem).length,
+    cam: DATA_CASES_AMC.filter(matchItem).length,
+    cams:DATA_CASES_AMS.filter(matchItem).length,
+  };
+  ac('nb-reports').textContent = counts.reports;
+  ac('nb-ga').textContent  = counts.ga;
+  ac('nb-ge').textContent  = counts.ge;
+  ac('nb-ca').textContent  = counts.ca;
+  ac('nb-cam').textContent = counts.cam;
+  ac('nb-cams').textContent= counts.cams;
+}
+
+function updateAgencyCounts() {
+  const agencies = Object.keys(AGENCY_META);
+  agencies.forEach(a => {
+    const prev = state.agencies;
+    state.agencies = [a];
+    const cnt = ALL_DATA.filter(matchItem).length;
+    state.agencies = prev;
+    const el = ac('adc-' + a);
+    if (el) el.textContent = cnt;
+  });
+  // all
+  const prev = state.agencies; state.agencies = [];
+  const total = ALL_DATA.filter(matchItem).length;
+  state.agencies = prev;
+  const elAll = ac('adc-all');
+  if (elAll) elAll.textContent = total;
+}
+
+function updateStats() {
+  const favCnt = Object.values(state.favorites).filter(Boolean).length;
+  ac('db-total').textContent   = ALL_DATA.length;
+  ac('db-reports').textContent = DATA_REPORTS.length;
+  ac('db-guides').textContent  = DATA_GUIDE_AMAZON.length + DATA_GUIDE_ECOMMERCE.length;
+  ac('db-cases').textContent   = DATA_CASES_AMAZON.length + DATA_CASES_AMC.length + DATA_CASES_AMS.length;
+  ac('db-fav').textContent     = favCnt;
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════════════════════════
+function switchView(viewName, navEl) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  ac('view-' + viewName).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  state.view = viewName;
+  window.scrollTo(0,0);
+
+  const parts = BREADCRUMBS[viewName] || [viewName];
+  ac('breadcrumb').innerHTML = ['Amazon Ads Intel Hub', ...parts].map((p,i) => {
+    if (i === 0) return `<span>${p}</span>`;
+    return `<span class="topbar-divider">/</span><span>${p}</span>`;
+  }).join('');
+
+  applyAll();
+  if (viewName === 'dashboard') renderDashboard();
+  if (viewName === 'calendar') renderCalendar();
+}
+
+function renderDashboard() {
+  const ovEl = ac('agencyOverview');
+  ovEl.innerHTML = Object.entries(AGENCY_META).map(([a, meta]) => {
+    const prev = state.agencies; state.agencies = [a];
+    const reportsA = DATA_REPORTS.filter(matchItem).length;
+    const guidesA  = DATA_GUIDE_AMAZON.filter(matchItem).length + DATA_GUIDE_ECOMMERCE.filter(matchItem).length;
+    const casesA   = DATA_CASES_AMAZON.filter(matchItem).length + DATA_CASES_AMC.filter(matchItem).length + DATA_CASES_AMS.filter(matchItem).length;
+    state.agencies = prev;
+    return `
+    <div class="agency-ov-card" onclick="quickFilterAgency('${a}')">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${meta.color}"></div>
+      <div class="ov-name" style="color:${meta.color}">${a}</div>
+      <div class="ov-stats">
+        <div class="ov-stat"><div class="ov-stat-num">${reportsA}</div><div class="ov-stat-label">Reports</div></div>
+        <div class="ov-stat"><div class="ov-stat-num">${guidesA}</div><div class="ov-stat-label">Guides</div></div>
+        <div class="ov-stat"><div class="ov-stat-num">${casesA}</div><div class="ov-stat-label">Cases</div></div>
+      </div>
+      <div class="ov-desc">${meta.desc}</div>
+    </div>`;
+  }).join('');
+
+  const recent = [...ALL_DATA].reverse().slice(0,9);
+  ac('recentCards').innerHTML = recent.map(buildCard).join('');
+  ac('recentCards').classList.toggle('list-view', state.viewMode === 'list');
+
+  updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════
+// AGENCY MULTI-SELECT DROPDOWN
+// ═══════════════════════════════════════════════════════════
+function toggleAgencyDropdown() {
+  const btn   = ac('agencyDropdownBtn');
+  const panel = ac('agencyDropdownPanel');
+  btn.classList.toggle('open');
+  panel.classList.toggle('open');
+}
+
+function closeAgencyDropdown() {
+  ac('agencyDropdownBtn').classList.remove('open');
+  ac('agencyDropdownPanel').classList.remove('open');
+}
+
+function toggleAgency(agency, el) {
+  if (agency === 'all') {
+    state.agencies = [];
+  } else {
+    const idx = state.agencies.indexOf(agency);
+    if (idx === -1) state.agencies.push(agency);
+    else state.agencies.splice(idx, 1);
+  }
+  syncAgencyUI();
+  applyAll();
+  if (state.view === 'dashboard') renderDashboard();
+}
+
+function quickFilterAgency(a) {
+  // from dashboard card click → filter to that agency, go to reports
+  state.agencies = [a];
+  syncAgencyUI();
+  switchView('reports', document.querySelector('[onclick*="switchView(\'reports\'"]'));
+}
+
+function syncAgencyUI() {
+  const agencies = Object.keys(AGENCY_META);
+  // "all" check
+  const allSelected = state.agencies.length === 0;
+  const allItem = document.querySelector('.agency-dd-item[data-agency="all"]');
+  if (allItem) allItem.classList.toggle('selected', allSelected);
+  ac('adck-all').textContent = allSelected ? '✓' : '';
+
+  agencies.forEach(a => {
+    const isSelected = state.agencies.includes(a);
+    const ddItem = document.querySelector(`.agency-dd-item[data-agency="${a}"]`);
+    if (ddItem) ddItem.classList.toggle('selected', isSelected);
+    const chk = ac('adck-' + a);
+    if (chk) chk.textContent = isSelected ? '✓' : '';
+  });
+
+  // Button label
+  const lbl = ac('agencyBtnLabel');
+  if (state.agencies.length === 0) lbl.textContent = 'All Agencies';
+  else if (state.agencies.length === 1) lbl.textContent = state.agencies[0];
+  else lbl.textContent = `${state.agencies.length}개 선택됨`;
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  const wrap = ac('agencyDropdownWrap');
+  if (wrap && !wrap.contains(e.target)) closeAgencyDropdown();
+});
+
+// ═══════════════════════════════════════════════════════════
+// FILTER CONTROLS
+// ═══════════════════════════════════════════════════════════
+function setFilter(key, val, btn) {
+  state.filters[key] = val;
+  const groupMap = { rq:'rf-quarter', ry:'rf-year', gat:'gaf-type' };
+  const grp = groupMap[key];
+  if (grp) document.querySelectorAll(`#${grp} .fbtn`).forEach(b => b.classList.toggle('on', b === btn));
+  applyAll();
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW MODE (GRID / LIST)
+// ═══════════════════════════════════════════════════════════
+function setView(mode) {
+  state.viewMode = mode;
+  ac('btnGrid').classList.toggle('active', mode === 'grid');
+  ac('btnList').classList.toggle('active', mode === 'list');
+  // re-render current section
+  applyAll();
+  if (state.view === 'dashboard') renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════════════
+// SORT
+// ═══════════════════════════════════════════════════════════
+const SORT_LABELS = { default:'최신순', name:'이름순', agency:'에이전시', year:'연도순' };
+
+function toggleSort() {
+  const panel = ac('sortPanel');
+  panel.classList.toggle('open');
+}
+
+function setSort(key, el) {
+  state.sortBy = key;
+  document.querySelectorAll('.sort-opt').forEach(o => {
+    o.classList.toggle('on', o.dataset.sort === key);
+    const chk = o.querySelector('.sort-check');
+    if (chk) chk.textContent = o.dataset.sort === key ? '✓' : '';
+  });
+  ac('sortLabel').textContent = SORT_LABELS[key] || key;
+  ac('sortPanel').classList.remove('open');
+  applyAll();
+}
+
+// Close sort on outside click
+document.addEventListener('click', e => {
+  const wrap = ac('sortWrap');
+  if (wrap && !wrap.contains(e.target)) ac('sortPanel').classList.remove('open');
+});
+
+// ═══════════════════════════════════════════════════════════
+// NOTE / FAVORITE
+// ═══════════════════════════════════════════════════════════
+
+function toggleFav(id, btn) {
+  state.favorites[id] = !state.favorites[id];
+  localStorage.setItem('hub_fav', JSON.stringify(state.favorites));
+  btn.classList.toggle('starred', state.favorites[id]);
+  updateStats();
+}
+
+function openNote(id, name, agency) {
+  state.noteId = id;
+  ac('m-title').textContent = name;
+  ac('m-sub').textContent   = agency;
+  ac('m-note').value        = state.notes[id] || '';
+  ac('overlay').classList.add('open');
+}
+
+function closeOverlay(e) { if (e.target === ac('overlay')) closeModal(); }
+function closeModal() { ac('overlay').classList.remove('open'); state.noteId = null; }
+
+function saveNote() {
+  if (!state.noteId) return;
+  state.notes[state.noteId] = ac('m-note').value;
+  localStorage.setItem('hub_notes', JSON.stringify(state.notes));
+  closeModal();
+  // re-render to update note icon + tooltip
+  applyAll();
+  if (state.view === 'dashboard') renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeAgencyDropdown(); ac('sortPanel').classList.remove('open'); }
+  // '/' to focus search (unless already in input)
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    ac('globalSearch').focus();
+    ac('globalSearch').select();
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// CALENDAR DATA
+// ═══════════════════════════════════════════════════════════
+// type: 'amazon' | 'holiday' | 'sales' | 'cultural'
+// regions: ['NA','JP','EU'] (any combo)
+// dates: { m: month(1-12), d: day, endM?, endD? }
+// prep: prep period start offset in days before event
+// required: true = 필수 Quick-filter 이벤트
+
+const CAL_EVENTS = [
+  // ──────── JANUARY ────────
+  { id:'new-year', name:"New Year's Day", emoji:'🎊', month:1, day:1,
+    regions:['NA','JP','EU'], type:'holiday', required:true,
+    color:'#00c8d4', prepDays:21,
+    date:'Jan 1, 2026', period:'Jan 1',
+    desc:'전 세계 신년 쇼핑 시즌. 연말 재고 정리 세일과 새해 선물 수요 동시 발생.',
+    tip:'Dec 10부터 카운트다운 배너·번들 딜 준비. 뷰티·가전 카테고리 수요↑' },
+  { id:'fukubukuro', name:'福袋 Fukubukuro', emoji:'🎁', month:1, day:1,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:14,
+    date:'Jan 1–3, 2026', period:'Jan 1–3',
+    desc:'일본 신년 "럭키백". Amazon Japan에서도 활발히 진행되는 대형 이벤트.',
+    tip:'번들 할인 박스 형태 상품 기획 필요. 가격 대비 가치(가성비) 강조' },
+  { id:'epiphany', name:'Epiphany / Reyes Magos', emoji:'👑', month:1, day:6,
+    regions:['EU'], type:'holiday',
+    color:'#a673ff', prepDays:10,
+    date:'Jan 6, 2026', period:'Jan 6',
+    desc:'스페인·이탈리아·독일 등 가톨릭 문화권 주요 선물 증정일. ES/IT 이커머스 매출 급등.',
+    tip:'ES·IT Amazon 마켓 집중. 완구·의류 카테고리 핵심' },
+  { id:'winter-sales-eu', name:'EU Winter Sales', emoji:'❄️', month:1, day:7,
+    regions:['EU'], type:'sales',
+    color:'#a673ff', prepDays:7,
+    date:'Jan 7 – Feb 17, 2026', period:'Jan–Feb',
+    desc:'프랑스(Soldes) 1/7~2/17, 스페인(Rebajas) 1/7~2/17. 법정 세일 시즌.',
+    tip:'EU Sponsored Ads 입찰 경쟁 급등. 사전 예산 확보 필수' },
+
+  // ──────── FEBRUARY ────────
+  { id:'valentines', name:"Valentine's Day", emoji:'💝', month:2, day:14,
+    regions:['NA','JP','EU'], type:'holiday',
+    color:'#ff5fa0', prepDays:21,
+    date:'Feb 14, 2026', period:'Feb 14',
+    desc:'NA·EU: 커플 선물 시즌. JP: 여성→남성 초콜릿 증정. 뷰티·주얼리·초콜릿 급성장.',
+    tip:'Jan 20부터 Gift 타겟팅 캠페인 런칭. SB Video 광고 효과적' },
+
+  // ──────── MARCH ────────
+  { id:'hinamatsuri', name:"Hina Matsuri / Girls' Day", emoji:'🎎', month:3, day:3,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:21,
+    date:'Mar 3, 2026', period:'Mar 3',
+    desc:'일본 여자아이 건강 기원 행사. 히나 인형·모모 관련 상품 판매 급증.',
+    tip:'완구·전통공예 카테고리. Feb 초부터 준비' },
+  { id:'womens-day', name:"International Women's Day", emoji:'🌸', month:3, day:8,
+    regions:['EU'], type:'holiday',
+    color:'#a673ff', prepDays:14,
+    date:'Mar 8, 2026', period:'Mar 8',
+    desc:'EU 전역 공식 기념일. 뷰티·웰니스·패션 브랜드 집중 프로모션.',
+    tip:'브랜드 가치 메시지 결합한 DSP 어웨어니스 캠페인 효과' },
+  { id:'white-day', name:'White Day', emoji:'🍫', month:3, day:14,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:14,
+    date:'Mar 14, 2026', period:'Mar 14',
+    desc:'일본 발렌타인 답례일. 남성→여성 선물 증정. 과자·스위츠·잡화 수요.',
+    tip:'발렌타인 구매 고객 리타게팅으로 White Day 재구매 유도' },
+  { id:'spring-equinox-jp', name:'春分の日 Shunbun', emoji:'🌸', month:3, day:20,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:7,
+    date:'Mar 20, 2026', period:'Mar 20',
+    desc:'일본 춘분 공휴일. 연휴 쇼핑 증가 + 봄 상품 수요 시작.',
+    tip:'봄 신상품 론칭 타이밍' },
+  { id:'big-spring-sale', name:'Big Spring Sale', emoji:'🌿', month:3, day:25,
+    regions:['NA','EU'], type:'amazon', required:true,
+    color:'#33cc88', prepDays:21,
+    date:'Est. Mar 25–31, 2026', period:'Late Mar',
+    desc:'Amazon 공식 봄 세일 행사. 2023년 신설. NA+EU 동시 진행. Prime 회원 전용 딜 포함.',
+    tip:'세일 2주 전 키워드 순위 확보 필수. DSP 리마케팅 예산 2배 편성' },
+  { id:'easter', name:'Easter / Pâques', emoji:'🐣', month:4, day:3,
+    regions:['NA','EU'], type:'holiday',
+    color:'#ffd166', prepDays:14,
+    date:'Apr 3–5, 2026 (Good Fri–Sun)', period:'Apr 3–5',
+    desc:'NA·EU 기독교 문화권 최대 봄 연휴. 가족 선물·식품·유아 카테고리 특수.',
+    tip:'Mar 중순부터 캠페인 준비. 영국·독일·프랑스 집중' },
+
+  // ──────── APRIL ────────
+  { id:'golden-week', name:'Golden Week 🇯🇵', emoji:'🎏', month:4, day:29,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:21,
+    date:'Apr 29 – May 5, 2026', period:'Apr 29–May 5',
+    desc:'일본 최대 연휴 (헌법기념일·어린이날 포함). 온라인 쇼핑 폭증. Amazon Japan 대형 세일 기간.',
+    tip:'1주 전부터 딜 페이지 준비. 여행·아웃도어·전자기기 카테고리 핵심' },
+
+  // ──────── MAY ────────
+  { id:'mothers-day-na', name:"Mother's Day (NA/UK)", emoji:'💐', month:5, day:10,
+    regions:['NA','EU'], type:'holiday',
+    color:'#33cc88', prepDays:21,
+    date:'May 10, 2026 (2nd Sun)', period:'May 10',
+    desc:'미국·캐나다·UK 어머니날. 뷰티·주얼리·전자기기·꽃 카테고리 전 연중 최대 수요.',
+    tip:'Apr 중순 SB Video + DSP 어웨어니스 → 5월 초 SP 전환 캠페인 전환' },
+  { id:'childrens-day-jp', name:"Children's Day 子供の日", emoji:'🎏', month:5, day:5,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:14,
+    date:'May 5, 2026', period:'May 5',
+    desc:'Golden Week 마지막 날. 완구·아동 의류·스포츠 용품 특수.',
+    tip:'Golden Week 패키지 딜로 함께 기획' },
+  { id:'memday', name:'Memorial Day (US)', emoji:'🇺🇸', month:5, day:25,
+    regions:['NA'], type:'sales',
+    color:'#4f8eff', prepDays:14,
+    date:'May 25, 2026 (Last Mon)', period:'May 25',
+    desc:'미국 여름 시즌 개막 3일 연휴. 아웃도어·가전·자동차용품 대형 할인.',
+    tip:'홈&가든·아웃도어 카테고리 집중 공략' },
+
+  // ──────── JUNE ────────
+  { id:'fathers-day', name:"Father's Day", emoji:'👔', month:6, day:21,
+    regions:['NA','EU'], type:'holiday',
+    color:'#ffd166', prepDays:21,
+    date:'Jun 21, 2026 (3rd Sun)', period:'Jun 21',
+    desc:'미국·영국·EU 아버지날. 전자기기·스포츠·의류 선물 수요.',
+    tip:'Jun 초 캠페인 시작. 남성 그루밍·전자기기 카테고리 강세' },
+  { id:'midsummer', name:'Midsommar (Scandinavia)', emoji:'☀️', month:6, day:19,
+    regions:['EU'], type:'cultural',
+    color:'#a673ff', prepDays:7,
+    date:'Jun 19–21, 2026', period:'Jun 19–21',
+    desc:'스웨덴·핀란드·노르웨이 하지 축제. 아웃도어·식품·패션 판매 급증.',
+    tip:'SE·FI·NO Amazon 마켓 특화 캠페인' },
+
+  // ──────── JULY ────────
+  { id:'tanabata', name:'七夕 Tanabata', emoji:'🎋', month:7, day:7,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:10,
+    date:'Jul 7, 2026', period:'Jul 7',
+    desc:'일본 칠석 행사. 소원 테마 상품·문구류·캔들 판매 증가.',
+    tip:'일본 문화 감성 콘텐츠 마케팅 기회' },
+  { id:'independence-day', name:'Independence Day 🇺🇸', emoji:'🎆', month:7, day:4,
+    regions:['NA'], type:'holiday',
+    color:'#4f8eff', prepDays:10,
+    date:'Jul 4, 2026', period:'Jul 4',
+    desc:'미국 독립기념일 연휴. 아웃도어·BBQ·가전 세일.',
+    tip:'Prime Day 준비와 병행해 예산 관리 주의' },
+  { id:'prime-day', name:'Amazon Prime Day', emoji:'⚡', month:7, day:9,
+    regions:['NA','JP','EU'], type:'amazon', required:true,
+    color:'#4f8eff', prepDays:30,
+    date:'Est. Jul 8–9, 2026', period:'Early Jul',
+    desc:'Amazon 연중 최대 이벤트. 48시간. NA+EU+JP 동시. DSP 상위퍼널 → SP 전환 전략 핵심.',
+    tip:'6월 초 재고 확보 필수. Lightning Deal 신청은 4월 마감. CPC 3~5배 예산 편성' },
+  { id:'bastille', name:'Bastille Day 🇫🇷', emoji:'🥐', month:7, day:14,
+    regions:['EU'], type:'holiday',
+    color:'#a673ff', prepDays:7,
+    date:'Jul 14, 2026', period:'Jul 14',
+    desc:'프랑스 혁명기념일. FR Amazon 마켓 특수. 패션·식품·라이프스타일 카테고리.',
+    tip:'프랑스 마켓 특화 캠페인 기회' },
+
+  // ──────── AUGUST ────────
+  { id:'obon', name:'お盆 Obon', emoji:'🏮', month:8, day:13,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:14,
+    date:'Aug 13–15, 2026', period:'Aug 13–15',
+    desc:'일본 최대 귀성 명절. 선물(오미야게)·여행용품·식품 선물세트 대폭 증가.',
+    tip:'선물 세트 번들 기획. Aug 초부터 준비 필수' },
+  { id:'summer-sales-eu', name:'EU Summer Sales', emoji:'☀️', month:7, day:20,
+    regions:['EU'], type:'sales',
+    color:'#a673ff', prepDays:14,
+    date:'Jul 20 – Sep 30, 2026', period:'Jul–Sep',
+    desc:'프랑스·스페인·이탈리아 법정 여름 세일 시즌. 패션·가전 대형 할인.',
+    tip:'EU CPC 하락 시기. 효율적 광고 집행 기회' },
+
+  // ──────── SEPTEMBER ────────
+  { id:'respects-aged', name:'敬老の日 Respect for Aged', emoji:'👴', month:9, day:21,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:14,
+    date:'Sep 21, 2026 (3rd Mon)', period:'Sep 21',
+    desc:'일본 경로의 날. 조부모 선물 수요. 건강식품·침구·전자기기.',
+    tip:'50대+ 타겟 상품 강조 캠페인' },
+  { id:'silver-week', name:'シルバーウィーク Silver Week', emoji:'🍂', month:9, day:19,
+    regions:['JP'], type:'cultural',
+    color:'#ffd166', prepDays:21,
+    date:'Sep 19–23, 2026', period:'Sep 19–23',
+    desc:'경로의 날(21일)+추분(23일) 사이 대체공휴일 포함 5연휴. 골든위크 다음 규모의 일본 쇼핑 시즌. 여행·가전·아웃도어·식품 선물 급증.',
+    tip:'9월 초부터 연휴 대비 딜 페이지 준비. 여행 용품·가족 선물 번들 기획. Amazon Japan 타임세일 적극 활용' },
+  { id:'autumnal-equinox', name:'秋分の日 Shubun', emoji:'🍂', month:9, day:23,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:7,
+    date:'Sep 23, 2026', period:'Sep 23',
+    desc:'일본 추분 공휴일. 가을 신상품 시즌 개막.',
+    tip:'가을·겨울 신상품 론칭 적기' },
+  { id:'b2s', name:'Back to School', emoji:'📚', month:8, day:15,
+    regions:['NA','EU'], type:'sales',
+    color:'#33cc88', prepDays:21,
+    date:'Aug 15 – Sep 15, 2026', period:'Aug–Sep',
+    desc:'미국·EU 신학기 쇼핑 시즌. 문구·전자기기·의류·백팩 카테고리 폭증.',
+    tip:'Prime Day 직후 B2S 캠페인 전환. Jul 말부터 준비' },
+
+  // ──────── OCTOBER ────────
+  { id:'prime-big-deal', name:'Prime Big Deal Days', emoji:'🔥', month:10, day:6,
+    regions:['NA','JP','EU'], type:'amazon', required:true,
+    color:'#a673ff', prepDays:21,
+    date:'Est. Oct 6–7, 2026', period:'Early Oct',
+    desc:'Amazon Q4 사전 세일. 2023년 신설. Prime Day와 동일 규모. 홀리데이 시즌 첫 킥오프.',
+    tip:'Sep 초 Lightning Deal 신청. DSP 오디언스 빌딩 + AMC NTB 타겟팅 핵심' },
+  { id:'halloween', name:'Halloween', emoji:'🎃', month:10, day:31,
+    regions:['NA','EU'], type:'holiday',
+    color:'#ff8c42', prepDays:21,
+    date:'Oct 31, 2026', period:'Oct 31',
+    desc:'NA·EU(UK·독일·아일랜드) 핵심 이벤트. 코스튬·캔디·데코 카테고리 폭증.',
+    tip:'Oct 초 SB Video로 코스튬 트렌드 선점. JP는 할로윈 문화 성장 중' },
+  { id:'halloween-jp', name:'Halloween 🇯🇵', emoji:'🎃', month:10, day:31,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:21,
+    date:'Oct 31, 2026', period:'Oct 31',
+    desc:'일본 할로윈 문화 급성장. 도쿄·오사카 중심으로 코스튬·파티 용품 수요 급증.',
+    tip:'JP 코스튬 특화 딜 페이지 기획' },
+
+  // ──────── NOVEMBER ────────
+  { id:'singles-day', name:"Singles' Day 双11", emoji:'💫', month:11, day:11,
+    regions:['EU','JP'], type:'sales',
+    color:'#ffd166', prepDays:14,
+    date:'Nov 11, 2026', period:'Nov 11',
+    desc:'중국발 세계 최대 쇼핑 행사. EU·JP에서도 확산 중. Amazon EU 11.11 딜 활발.',
+    tip:'EU·JP에서 블랙프라이데이 열기 시작 직전. 선공략 기회' },
+  { id:'thanksgiving', name:'Thanksgiving 🇺🇸', emoji:'🦃', month:11, day:26,
+    regions:['NA'], type:'holiday',
+    color:'#ffd166', prepDays:14,
+    date:'Nov 26, 2026 (4th Thu)', period:'Nov 26',
+    desc:'미국 추수감사절. 사실상 홀리데이 쇼핑 시즌 공식 개막일.',
+    tip:'블랙프라이데이 딜을 추수감사절 당일부터 시작하는 트렌드 증가' },
+  { id:'black-friday', name:'Black Friday', emoji:'🖤', month:11, day:27,
+    regions:['NA','JP','EU'], type:'amazon', required:true,
+    color:'#ff8c42', prepDays:30,
+    date:'Nov 27, 2026', period:'Nov 27',
+    desc:'전 세계 최대 쇼핑일. Amazon 연중 2위 매출 규모. CPC 연중 최고점 기록.',
+    tip:'Oct 초부터 재고·예산·딜 준비. AMC 오디언스 미리 세그먼트 구성 필수' },
+  { id:'cyber-monday', name:'Cyber Monday', emoji:'💻', month:11, day:30,
+    regions:['NA','JP','EU'], type:'amazon', required:true,
+    color:'#ffd166', prepDays:30,
+    date:'Nov 30, 2026', period:'Nov 30',
+    desc:'Cyber 5(추수감사절~사이버먼데이) 절정. 전자기기·소프트웨어 카테고리 집중.',
+    tip:'블랙프라이데이 구매자 리타게팅. 당일 Lightning Deal로 재고 소진 전략' },
+
+  // ──────── DECEMBER ────────
+  { id:'christmas', name:'Christmas', emoji:'🎄', month:12, day:25,
+    regions:['NA','EU'], type:'holiday',
+    color:'#33cc88', prepDays:30,
+    date:'Dec 25, 2026', period:'Dec 25',
+    desc:'연중 최대 선물 증정 시즌. 12월 전체가 사실상 크리스마스 쇼핑 기간.',
+    tip:'Dec 1부터 카운트다운 배너. Dec 20 이후 배송 불가 알림으로 전환 유도' },
+  { id:'xmas-jp', name:'クリスマス Christmas 🇯🇵', emoji:'🎄', month:12, day:25,
+    regions:['JP'], type:'cultural',
+    color:'#ff5fa0', prepDays:21,
+    date:'Dec 25, 2026', period:'Dec 25',
+    desc:'일본 크리스마스는 커플·가족 이벤트 성격. 케이크·고급 식품·로맨틱 선물 수요.',
+    tip:'JP 시장 특화 프리미엄 번들 기획' },
+  { id:'boxing-day', name:'Boxing Day 🇬🇧🇨🇦', emoji:'📦', month:12, day:26,
+    regions:['EU'], type:'sales',
+    color:'#a673ff', prepDays:7,
+    date:'Dec 26, 2026', period:'Dec 26',
+    desc:'영국·캐나다·호주 최대 세일 데이. 크리스마스 다음 날 대규모 할인 쇼핑.',
+    tip:'UK Amazon 마켓 집중. 크리스마스 재고 처리 기회' },
+  { id:'new-year-eve', name:"New Year's Eve Sales", emoji:'🥂', month:12, day:28,
+    regions:['NA','JP','EU'], type:'sales',
+    color:'#00c8d4', prepDays:7,
+    date:'Dec 28–31, 2026', period:'Dec 28–31',
+    desc:'연말 재고 처리 세일. 뷰티·패션·가전 카테고리 대규모 할인. 새해 선물 구매 동시 발생.',
+    tip:'연간 광고 예산 소진 + 재고 처리 병행 기회' },
+];
+
+// ═══════════════════════════════════════════════════════════
+// CALENDAR STATE & RENDER
+// ═══════════════════════════════════════════════════════════
+const calState = {
+  region: 'ALL',
+  type: 'all',
+  viewMode: 'grid',
+  quickActive: null,  // highlighted event id
+};
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const TYPE_COLORS = { amazon:'#4f8eff', holiday:'#33cc88', sales:'#ff8c42', cultural:'#a673ff' };
+const TYPE_LABELS = { amazon:'AMAZON', holiday:'HOLIDAY', sales:'SALES', cultural:'CULTURAL' };
+
+function calFilteredEvents() {
+  return CAL_EVENTS.filter(ev => {
+    if (calState.region !== 'ALL' && !ev.regions.includes(calState.region)) return false;
+    if (calState.type !== 'all' && ev.type !== calState.type) return false;
+    return true;
+  });
+}
+
+function setCalRegion(r, btn) {
+  calState.region = r;
+  document.querySelectorAll('.cal-region-btn').forEach(b => b.classList.toggle('on', b.dataset.r === r));
+  renderCalendar();
+}
+
+function setCalType(t, btn) {
+  calState.type = t;
+  document.querySelectorAll('.cal-tbtn').forEach(b => b.classList.toggle('on', b.dataset.type === t));
+  renderCalendar();
+}
+
+function setCalView(mode) {
+  calState.viewMode = mode;
+  ac('calBtnGrid').classList.toggle('active', mode === 'grid');
+  ac('calBtnList').classList.toggle('active', mode === 'list');
+  ac('calGridView').style.display = mode === 'grid' ? '' : 'none';
+  const lv = ac('calListView');
+  lv.style.display = mode === 'list' ? '' : 'none';
+  lv.classList.toggle('active', mode === 'list');
+  renderCalendar();
+}
+
+function calQuickToggle(id, btn) {
+  if (calState.quickActive === id) {
+    calState.quickActive = null;
+    document.querySelectorAll('.cal-qbtn').forEach(b => { b.classList.remove('on'); b.style.background = ''; b.style.color = ''; });
+  } else {
+    calState.quickActive = id;
+    document.querySelectorAll('.cal-qbtn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const ev = CAL_EVENTS.find(e => e.id === id);
+    if (ev) { btn.style.background = ev.color; btn.style.color = '#fff'; }
+    // scroll to month
+    const ev2 = CAL_EVENTS.find(e => e.id === id);
+    if (ev2) {
+      const el = document.getElementById('cal-month-' + ev2.month);
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+  }
+  renderCalendar();
+}
+
+function showEventDetail(ev, e) {
+  const d = ac('calDetail');
+  const regionLabels = ev.regions.join(' · ');
+  d.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="font-size:20px">${ev.emoji}</span>
+      <div class="cal-detail-name" style="color:${ev.color}">${ev.name}</div>
+    </div>
+    <div class="cal-detail-date">📅 ${ev.date}</div>
+    ${ev.prepDays ? `<div class="cal-detail-prep">⏱ 준비 시작: ${ev.date.split(',')[0].replace(/Est\.\s*/,'')} 기준 약 ${ev.prepDays}일 전</div>` : ''}
+    <div class="cal-detail-desc">${ev.desc}</div>
+    <div class="cal-detail-tip">💡 ${ev.tip}</div>
+    <div class="cal-detail-regions">
+      ${ev.regions.map(r => `<span class="cal-detail-region">${r==='NA'?'🇺🇸 NA':r==='JP'?'🇯🇵 JP':'🇪🇺 EU'}</span>`).join('')}
+      <span class="cal-detail-region" style="color:${TYPE_COLORS[ev.type]}">${TYPE_LABELS[ev.type]}</span>
+    </div>`;
+  d.classList.add('visible');
+  // position
+  const rect = e.target.closest('.cal-event-pill, .cal-list-item').getBoundingClientRect();
+  let top = rect.bottom + 8;
+  let left = rect.left;
+  if (left + 270 > window.innerWidth) left = window.innerWidth - 280;
+  if (top + 260 > window.innerHeight) top = rect.top - 270;
+  d.style.top = top + 'px';
+  d.style.left = left + 'px';
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.cal-event-pill') && !e.target.closest('.cal-list-item')) {
+    const d = ac('calDetail');
+    if (d) d.classList.remove('visible');
+  }
+});
+
+function renderCalendar() {
+  if (calState.viewMode === 'grid') renderCalGrid();
+  else renderCalList();
+}
+
+function renderCalGrid() {
+  const events = calFilteredEvents();
+  const grid = ac('calMonthsGrid');
+  if (!grid) return;
+
+  grid.innerHTML = MONTHS.map((mName, mi) => {
+    const m = mi + 1;
+    const mEvs = events.filter(ev => ev.month === m);
+    const hasEvents = mEvs.length > 0;
+    const hasHighlight = calState.quickActive && mEvs.some(ev => ev.id === calState.quickActive);
+
+    const pills = mEvs.map(ev => {
+      const isHL = calState.quickActive === ev.id;
+      return `
+      <div class="cal-event-pill ${isHL?'highlighted':''}" onclick="showEventDetail(CAL_EVENTS.find(e=>e.id==='${ev.id}'),event)"
+           style="${isHL?'background:'+ev.color+'22;border-color:'+ev.color:''}"
+           title="${ev.name}">
+        <div class="cal-pill-dot" style="background:${ev.color}"></div>
+        <span class="cal-pill-name" style="${isHL?'color:'+ev.color:''}">${ev.emoji} ${ev.name}</span>
+        <span class="cal-pill-date">${ev.period}</span>
+        <span class="cal-pill-flags">${ev.regions.map(r=>r==='NA'?'🇺🇸':r==='JP'?'🇯🇵':'🇪🇺').join('')}</span>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="cal-month-card ${hasHighlight?'has-highlight':''}" id="cal-month-${m}">
+      <div class="cal-month-hdr">
+        <span class="cal-month-name">${mName}</span>
+        <span class="cal-month-count ${hasEvents?'has-events':''}">${mEvs.length}</span>
+      </div>
+      <div class="cal-month-body">
+        ${hasEvents ? pills : '<div style="font-size:10px;color:var(--text-muted);padding:6px 4px">No events for selected filter</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCalList() {
+  const events = calFilteredEvents();
+  const sorted = [...events].sort((a,b) => a.month !== b.month ? a.month-b.month : a.day-b.day);
+  const content = ac('calListContent');
+  if (!content) return;
+
+  // group by month
+  const byMonth = {};
+  sorted.forEach(ev => {
+    if (!byMonth[ev.month]) byMonth[ev.month] = [];
+    byMonth[ev.month].push(ev);
+  });
+
+  content.innerHTML = Object.entries(byMonth).map(([m, evs]) => {
+    const items = evs.map(ev => {
+      const isHL = calState.quickActive === ev.id;
+      return `
+      <div class="cal-list-item ${isHL?'highlighted':''}"
+           onclick="showEventDetail(CAL_EVENTS.find(e=>e.id==='${ev.id}'),event)"
+           style="${isHL?'border-left-color:'+ev.color:''}">
+        <div class="cal-item-date">
+          <strong>${ev.emoji} ${ev.period}</strong>
+          2026
+        </div>
+        <div>
+          <div class="cal-item-name" style="${isHL?'color:'+ev.color:''}">${ev.name}</div>
+          <div class="cal-item-sub">${ev.desc.slice(0,60)}…</div>
+        </div>
+        <div class="cal-item-flags">${ev.regions.map(r=>r==='NA'?'🇺🇸':r==='JP'?'🇯🇵':'🇪🇺').join(' ')}</div>
+        <div class="cal-item-badges">
+          <span class="badge" style="background:${TYPE_COLORS[ev.type]}22;color:${TYPE_COLORS[ev.type]};border:1px solid ${TYPE_COLORS[ev.type]}44;font-family:'IBM Plex Mono',monospace;font-size:8px;padding:2px 6px;">${TYPE_LABELS[ev.type]}</span>
+          ${ev.required ? '<span class="badge" style="background:rgba(255,209,102,0.15);color:#ffd166;border:1px solid rgba(255,209,102,0.3);font-family:\'IBM Plex Mono\',monospace;font-size:8px;padding:2px 6px;">REQUIRED</span>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="cal-list-month">
+      <div class="cal-list-month-hdr">
+        <span class="cal-list-month-name">${MONTHS[m-1]}</span>
+        <div class="cal-list-month-line"></div>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text-dim)">${evs.length} events</span>
+      </div>
+      ${items}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+function init() {
+  syncAgencyUI();
+  updateAgencyCounts();
+  renderDashboard();
+  switchView('dashboard', document.querySelector('.nav-item.active'));
+}
+
+init();
+</script>
+</body>
+</html>
