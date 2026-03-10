@@ -1,0 +1,31 @@
+name: Daily Hub Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 오전 9시 KST
+  workflow_dispatch:       # 수동 실행도 가능
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install feedparser
+
+      - name: Run update script
+        run: python check_updates.py
+
+      - name: Commit if updated
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "Auto-update: new agency content detected"
+          git push
