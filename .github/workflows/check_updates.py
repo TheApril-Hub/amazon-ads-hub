@@ -29,27 +29,39 @@ def main():
     seen = load_seen()
 
     for agency, url in FEEDS.items():
-        feed = feedparser.parse(url)
-        prev = set(seen.get(agency, []))
-        curr = []
-        new  = []
+        try:
+            feed = feedparser.parse(url)
+            if feed.bozo and not feed.entries:
+                print(f"[{agency}] RSS 접근 실패 — 스킵")
+                continue
 
-        for entry in feed.entries[:10]:
-            eid = entry.get("id") or entry.get("link")
-            curr.append(eid)
-            if eid not in prev:
-                new.append({"title": entry.title, "link": entry.link})
+            prev = set(seen.get(agency, []))
+            curr = []
+            new  = []
 
-        seen[agency] = curr
-        if new:
-            print(f"[{agency}] 새 항목 {len(new)}건")
-            for item in new:
-                print(f"  • {item['title']}")
-                print(f"    {item['link']}")
-        else:
-            print(f"[{agency}] 변경 없음")
+            for entry in feed.entries[:10]:
+                eid = entry.get("id") or entry.get("link", "")
+                curr.append(eid)
+                if eid not in prev:
+                    new.append({"title": entry.get("title", "제목없음"),
+                                "link":  entry.get("link", "")})
+
+            seen[agency] = curr
+
+            if new:
+                print(f"[{agency}] 새 항목 {len(new)}건")
+                for item in new:
+                    print(f"  • {item['title']}")
+                    print(f"    {item['link']}")
+            else:
+                print(f"[{agency}] 변경 없음")
+
+        except Exception as e:
+            print(f"[{agency}] 오류 발생: {e} — 스킵")
+            continue
 
     save_seen(seen)
+    print("완료")
 
 if __name__ == "__main__":
     main()
